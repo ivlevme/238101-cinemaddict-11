@@ -290,12 +290,10 @@ for (let i = 0; i < FILMS_COUNT; i++) {
 
 render(filmsListElement, createShowMoreButtonTemplate());
 
-Array.from(filmsExtraListElements).forEach((filmsExtraListElement) => {
+filmsExtraListElements.forEach((filmsExtraListElement) => {
   for (let i = 0; i < FILMS_EXTRA_COUNT; i++) {
     render(filmsExtraListElement, createFilmCardTemplate());
   }
 });
-
-// const siteBodyElement = document.querySelector(`body`);
 
 render(document.body, createFilmDetailsPopupTemplate());
