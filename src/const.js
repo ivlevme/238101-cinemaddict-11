@@ -1,3 +1,18 @@
+const MONTH_NAMES = [
+  `January`,
+  `February`,
+  `March`,
+  `April`,
+  `May`,
+  `June`,
+  `July`,
+  `August`,
+  `September`,
+  `October`,
+  `November`,
+  `December`,
+];
+
 const Film = {
   DESCRIPTION: [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -30,25 +45,12 @@ const Film = {
     `the great flamarion`,
     `the man with the golden arm`,
   ],
-  YEAR: [
-    `1929`,
-    `1933`,
-    `1955`,
-    `1964`,
-    `1936`
-  ],
   GENRE: [
     `Musical`,
     `Western`,
     `Drama`,
     `Comedy`,
     `Cartoon`
-  ],
-  DURATION: [
-    `1h 55m`,
-    `54m`,
-    `1h 59m`,
-    `16m`
   ],
   STAFF: [
     `Anthony Mann`,
@@ -62,11 +64,6 @@ const Film = {
 };
 
 const Comment = {
-  DATE: [
-    `2019/12/31 23:59`,
-    `2 days ago`,
-    `Today`
-  ],
   TEXT: [
     `Interesting setting and a good cast`,
     `Booooooooooring`,
@@ -86,4 +83,4 @@ const Comment = {
 };
 
 
-export {Film, Comment};
+export {MONTH_NAMES, Film, Comment};

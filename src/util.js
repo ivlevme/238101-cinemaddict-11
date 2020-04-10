@@ -14,5 +14,15 @@ const generateRandomArray = (count, element) => {
     .map(typeof element === `function` ? element : () => getRandomArrayItem(element));
 };
 
+const castTimeFormat = (value) => {
+  return value < 10 ? `0${value}` : String(value);
+};
 
-export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray};
+const formatRuntime = (date) => {
+  const hours = date.getHours() > 1 ? `${date.getHours()}h` : ``;
+  const minutes = date.getMinutes() > 0 ? `${date.getMinutes()}m` : ``;
+  return `${hours} ${minutes}`;
+};
+
+
+export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat, formatRuntime};

@@ -2,10 +2,28 @@ import {Film, Comment} from '../const.js';
 import {generateRandomArray, getRandomArrayItem, getRandomIntegerNumber} from '../util.js';
 
 
-const countFilters = {
-  favorite: 0,
-  history: 0,
-  watchlist: 0,
+const COUNT_DAYS_IN_YEAR = 365;
+
+
+let countFavorite = 0;
+let countHistory = 0;
+let countWatchlist = 0;
+
+const filters = new Map();
+
+
+const getRandomDate = () => {
+  const targetDate = new Date();
+  const diffValue = getRandomIntegerNumber(0, 50);
+
+  targetDate.setDate(targetDate.getDate() - COUNT_DAYS_IN_YEAR * diffValue);
+  const diffValueHours = getRandomIntegerNumber(0, 24);
+  const diffValueMinutes = getRandomIntegerNumber(0, 60);
+
+  targetDate.setHours(targetDate.getHours() - diffValueHours);
+  targetDate.setMinutes(targetDate.getMinutes() - diffValueMinutes);
+
+  return targetDate;
 };
 
 const generateFilm = () => {
@@ -13,9 +31,13 @@ const generateFilm = () => {
   const isHistory = Math.random() > 0.5;
   const isWatchlist = Math.random() > 0.5;
 
-  countFilters.favorite = isFavorites ? countFilters.favorite + 1 : countFilters.favorite;
-  countFilters.history = isHistory ? countFilters.history + 1 : countFilters.history;
-  countFilters.watchlist = isWatchlist ? countFilters.watchlist + 1 : countFilters.watchlist;
+  countFavorite = isFavorites ? countFavorite + 1 : countFavorite;
+  countHistory = isHistory ? countHistory + 1 : countHistory;
+  countWatchlist = isWatchlist ? countWatchlist + 1 : countWatchlist;
+
+  filters.set(`Watchlist`, countWatchlist);
+  filters.set(`History`, countHistory);
+  filters.set(`Favorites`, countFavorite);
 
   return {
     actors: generateRandomArray(getRandomIntegerNumber(1, 4), Film.STAFF),
@@ -32,18 +54,18 @@ const generateFilm = () => {
     original: getRandomArrayItem(Film.NAME),
     poster: getRandomArrayItem(Film.POSTER),
     rating: getRandomIntegerNumber(10, 100) / 10,
-    releaseDate: `30 March 1945`,
-    runtime: getRandomArrayItem(Film.DURATION),
+    releaseDate: getRandomDate(),
+    runtime: getRandomDate(),
     writers: generateRandomArray(getRandomIntegerNumber(1, 4), Film.STAFF),
   };
 };
 
 const generateComment = () => {
   return {
-    emodji: getRandomArrayItem(Comment.EMOJI),
+    emoji: getRandomArrayItem(Comment.EMOJI),
     text: getRandomArrayItem(Comment.TEXT),
     author: getRandomArrayItem(Comment.AUTHOR),
-    date: getRandomArrayItem(Comment.DATE),
+    date: getRandomDate(),
   };
 };
 
@@ -52,4 +74,4 @@ const generateFilms = (count) => {
 };
 
 
-export {generateFilms, countFilters};
+export {generateFilms, filters};
