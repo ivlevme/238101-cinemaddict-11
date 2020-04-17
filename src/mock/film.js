@@ -4,14 +4,6 @@ import {generateRandomArray, getRandomArrayItem, getRandomIntegerNumber} from '.
 
 const COUNT_DAYS_IN_YEAR = 365;
 
-
-let countFavorite = 0;
-let countHistory = 0;
-let countWatchlist = 0;
-
-const filters = new Map();
-
-
 const getRandomDate = () => {
   const targetDate = new Date();
   const diffValue = getRandomIntegerNumber(0, 50);
@@ -30,14 +22,6 @@ const generateFilm = () => {
   const isFavorites = Math.random() > 0.5;
   const isHistory = Math.random() > 0.5;
   const isWatchlist = Math.random() > 0.5;
-
-  countFavorite = isFavorites ? countFavorite + 1 : countFavorite;
-  countHistory = isHistory ? countHistory + 1 : countHistory;
-  countWatchlist = isWatchlist ? countWatchlist + 1 : countWatchlist;
-
-  filters.set(`Watchlist`, countWatchlist);
-  filters.set(`History`, countHistory);
-  filters.set(`Favorites`, countFavorite);
 
   return {
     actors: generateRandomArray(getRandomIntegerNumber(1, 4), Film.STAFF),
@@ -74,4 +58,4 @@ const generateFilms = (count) => {
 };
 
 
-export {generateFilms, filters};
+export {generateFilms};

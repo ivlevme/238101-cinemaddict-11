@@ -34,5 +34,10 @@ const createFilmCardTemplate = (film) => {
   `);
 };
 
+const createFilmsCardTemplate = (films) => {
+  return films
+  .map((film) => createFilmCardTemplate(film))
+  .join(`\n`);
+};
 
-export {createFilmCardTemplate};
+export {createFilmCardTemplate, createFilmsCardTemplate};

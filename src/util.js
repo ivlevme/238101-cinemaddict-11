@@ -1,3 +1,6 @@
+const COUNT_DELETE_ELEMENTS = 1;
+
+
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length);
 
@@ -14,6 +17,18 @@ const generateRandomArray = (count, element) => {
     .map(typeof element === `function` ? element : () => getRandomArrayItem(element));
 };
 
+const getArrayNonrepeatingItems = (array, count) => {
+  const resultArray = [];
+
+  for (let i = 0; i < count; i++) {
+    let getRandomIndexFilm = getRandomIntegerNumber(0, array.length);
+    resultArray.push(array[getRandomIndexFilm]);
+    array.splice(getRandomIndexFilm, COUNT_DELETE_ELEMENTS);
+  }
+
+  return resultArray;
+};
+
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
@@ -25,4 +40,5 @@ const formatRuntime = (date) => {
 };
 
 
-export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat, formatRuntime};
+export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat,
+  formatRuntime, getArrayNonrepeatingItems};

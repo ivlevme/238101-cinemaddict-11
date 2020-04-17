@@ -13,6 +13,12 @@ const MONTH_NAMES = [
   `December`,
 ];
 
+const FILTER_CATEGORIES = [
+  `Watchlist`,
+  `History`,
+  `Favorites`,
+];
+
 const Film = {
   DESCRIPTION: [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -61,6 +67,18 @@ const Film = {
     `Mary Beth Hughes`,
     `Dan Duryea`,
   ],
+  CATEGORY: [
+    `Top rated`,
+    `Most commented`,
+  ],
+  CATEGORY_INDEX: {
+    topRated: 0,
+    mostCommented: 1,
+  },
+  SORT_PARAM: {
+    comments: `comments.length`,
+    rating: `rating`,
+  }
 };
 
 const Comment = {
@@ -83,4 +101,4 @@ const Comment = {
 };
 
 
-export {MONTH_NAMES, Film, Comment};
+export {MONTH_NAMES, Film, Comment, FILTER_CATEGORIES};
