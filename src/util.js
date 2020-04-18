@@ -1,5 +1,9 @@
 const COUNT_DELETE_ELEMENTS = 1;
 
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
 
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length);
@@ -39,6 +43,24 @@ const formatRuntime = (date) => {
   return `${hours} ${minutes}`;
 };
 
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
 
-export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat,
-  formatRuntime, getArrayNonrepeatingItems};
+  return newElement.firstChild;
+};
+
+const render = (container, element, place = RenderPosition.BEFOREEND) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+
+export {RenderPosition, render, getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat,
+  formatRuntime, getArrayNonrepeatingItems, createElement};
