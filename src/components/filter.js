@@ -1,44 +1,36 @@
-import {FILTER_CATEGORIES} from "../const.js";
+import {createElement} from "../util.js";
 
 
-const IndexMap = {
-  KEY: 0,
-  VALUE: 1,
+const createFilterTemplate = (name, count) => {
+  return (`
+    <a href="#${name}" class="main-navigation__item">
+      ${name} <span class="main-navigation__item-count">${count}</span>
+    </a>
+  `).trim();
 };
 
 
-const countFilterCaterories = (films) => {
-  const state = new Map();
+export default class Filter {
+  constructor(name, count) {
+    this._name = name;
+    this._count = count;
 
-  FILTER_CATEGORIES.forEach((category) => {
-    state.set(category, 0);
-  });
-
-  films.forEach((film) => {
-    FILTER_CATEGORIES.forEach((category) => {
-      const currentCategory = `is${category}`;
-
-      state.set(category, film[currentCategory] ? state.get(category) + 1 : state.get(category));
-    });
-  });
-
-  return state;
-};
-
-const createFilterTemplate = (films) => {
-  const stateFilterCategories = countFilterCaterories(films);
-
-  const filters = [];
-
-  for (const stateFilterCategory of stateFilterCategories) {
-    const name = stateFilterCategory[IndexMap.KEY];
-    const count = stateFilterCategory[IndexMap.VALUE];
-
-    filters.push(`<a href="#${name}" class="main-navigation__item">${name} <span class="main-navigation__item-count">${count}</span></a>`);
+    this._element = null;
   }
 
-  return filters.join(`\n`);
-};
+  getTemplate() {
+    return createFilterTemplate(this._name, this._count);
+  }
 
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
 
-export {createFilterTemplate};
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

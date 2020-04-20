@@ -1,9 +1,6 @@
-import {getArrayNonrepeatingItems} from "../util.js";
-import {Film} from "../const.js";
-import {createFilmsCardTemplate} from "../components/film-card.js";
+import {createElement, getArrayNonrepeatingItems} from '../util.js';
+import {Film, FILMS_EXTRA_COUNT} from "../const.js";
 
-
-const FILMS_EXTRA_COUNT = 2;
 
 const INDEX_FIRST_ELEMENT = 0;
 
@@ -67,8 +64,8 @@ const selectFilms = (allFilms, indexLastRepeatFilm, currentFilms) => {
   return currentFilms;
 };
 
-const createExtraFilmsTemplate = (category, films) => {
-  let currentCategoryfilms = [];
+const createExtraFilmsTemlpate = (category, films) => {
+  currentCategoryfilms = [];
 
   switch (category) {
     case Film.CATEGORY[Film.CATEGORY_INDEX.topRated]:
@@ -80,7 +77,6 @@ const createExtraFilmsTemplate = (category, films) => {
       break;
   }
 
-
   return (
     currentCategoryfilms === false ? `` :
       `
@@ -88,11 +84,48 @@ const createExtraFilmsTemplate = (category, films) => {
         <h2 class="films-list__title">${category}</h2>
 
         <div class="films-list__container">
-        ${createFilmsCardTemplate(currentCategoryfilms)}
         </div>
       </section>
-  `);
+  `).trim();
 };
 
 
-export {createExtraFilmsTemplate};
+let currentCategoryfilms = [];
+
+
+export default class FilmExtra {
+  constructor(category, films) {
+    this._category = category;
+    this._films = films;
+
+    this._element = null;
+    this._currentFilms = null;
+  }
+
+  getTemplate() {
+    return createExtraFilmsTemlpate(this._category, this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      const result = this.getTemplate();
+
+      if (result) {
+        createElement(result);
+        this._currentFilms = currentCategoryfilms;
+      }
+
+      this._element = result ? createElement(result) : ``;
+    }
+
+    return this._element;
+  }
+
+  getCurrentFilms() {
+    return this._currentFilms;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,3 +1,5 @@
+const FILMS_EXTRA_COUNT = 2;
+
 const MONTH_NAMES = [
   `January`,
   `February`,
@@ -18,6 +20,11 @@ const FILTER_CATEGORIES = [
   `History`,
   `Favorites`,
 ];
+
+const IndexMap = {
+  KEY: 0,
+  VALUE: 1,
+};
 
 const Film = {
   DESCRIPTION: [
@@ -100,5 +107,4 @@ const Comment = {
   ]
 };
 
-
-export {MONTH_NAMES, Film, Comment, FILTER_CATEGORIES};
+export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Comment, FILTER_CATEGORIES, IndexMap};

@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from '../const.js';
-import {castTimeFormat, formatRuntime} from '../util.js';
+import {createElement, castTimeFormat, formatRuntime} from '../util.js';
 
 
 const formatReleaseDate = (date) => {
@@ -162,8 +162,30 @@ const createDetailsPopupTemplate = (film) => {
         </div>
       </form>
     </section>
-  `);
+  `).trim();
 };
 
 
-export {createDetailsPopupTemplate};
+export default class DetailsPopup {
+  constructor(film) {
+    this._film = film;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDetailsPopupTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
