@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component.js";
 import {MONTH_NAMES} from '../const.js';
-import {createElement, castTimeFormat, formatRuntime} from '../util.js';
+import {castTimeFormat, formatRuntime} from '../utils/common.js';
 
 
 const formatReleaseDate = (date) => {
@@ -166,26 +167,19 @@ const createDetailsPopupTemplate = (film) => {
 };
 
 
-export default class DetailsPopup {
+export default class DetailsPopup extends AbstractComponent {
   constructor(film) {
-    this._film = film;
+    super();
 
-    this._element = null;
+    this._film = film;
   }
 
   getTemplate() {
     return createDetailsPopupTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setElementClickHandler(selector, handler) {
+    this.getElement().querySelector(selector)
+      .addEventListener(`click`, handler);
   }
 }

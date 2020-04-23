@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import AbstractComponent from "./abstract-component.js";
 
 
 const createProfileTemplate = (profile) => {
@@ -9,30 +9,18 @@ const createProfileTemplate = (profile) => {
       <p class="profile__rating">${name}</p>
       <img class="profile__avatar" src="images/${avatar}@2x.png" alt="Avatar" width="35" height="35">
     </section>
-  `.trim());
+  `).trim();
 };
 
 
-export default class Profile {
+export default class Profile extends AbstractComponent {
   constructor(profile) {
-    this._profile = profile;
+    super();
 
-    this._element = null;
+    this._profile = profile;
   }
 
   getTemplate() {
     return createProfileTemplate(this._profile);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

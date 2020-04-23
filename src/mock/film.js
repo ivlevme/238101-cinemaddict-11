@@ -1,5 +1,5 @@
 import {Film, Comment} from '../const.js';
-import {generateRandomArray, getRandomArrayItem, getRandomIntegerNumber} from '../util.js';
+import {generateRandomArray, getRandomArrayItem, getRandomIntegerNumber} from '../utils/common.js';
 
 
 const COUNT_DAYS_IN_YEAR = 365;

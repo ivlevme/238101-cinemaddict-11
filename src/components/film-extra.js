@@ -1,84 +1,30 @@
-import {createElement, getArrayNonrepeatingItems} from '../util.js';
-import {Film, FILMS_EXTRA_COUNT} from "../const.js";
+import AbstractComponent from "./abstract-component.js";
+import {Category, FILMS_EXTRA_COUNT} from "../const.js";
 
 
-const INDEX_FIRST_ELEMENT = 0;
-
-const MIN_RATING = 0;
-const MIN_COUNT_COMMENTS = 0;
-
-
-const selectMostCommentedFilms = (films) => {
-  const mostCommentedValue = films[INDEX_FIRST_ELEMENT].comments.length;
-
-  if (mostCommentedValue === MIN_RATING) {
-    return false;
-  }
-
-  let mostCommentedFilms = [];
-
-  let indexLastRepeatMaxValue = -1;
-
-  for (const film of films) {
-    if (film.comments.length !== mostCommentedValue) {
-      break;
-    }
-
-    indexLastRepeatMaxValue++;
-  }
-
-  return selectFilms(films, indexLastRepeatMaxValue, mostCommentedFilms);
-};
-
-const selectTopRatedFilms = (films) => {
-  const topRatedValue = films[INDEX_FIRST_ELEMENT].rating;
-
-  if (topRatedValue === MIN_COUNT_COMMENTS) {
-    return false;
-  }
-
-  let topRatedFilms = [];
-
-  let indexLastRepeatMaxValue = -1;
-
-  for (const film of films) {
-    if (film.rating !== topRatedValue) {
-      break;
-    }
-
-    indexLastRepeatMaxValue++;
-  }
-
-  return selectFilms(films, indexLastRepeatMaxValue, topRatedFilms);
-};
-
-const selectFilms = (allFilms, indexLastRepeatFilm, currentFilms) => {
-  const countRepeatMaxValue = indexLastRepeatFilm + 1;
-
-  if (countRepeatMaxValue > FILMS_EXTRA_COUNT) {
-    currentFilms = getArrayNonrepeatingItems(allFilms.splice(INDEX_FIRST_ELEMENT, countRepeatMaxValue), FILMS_EXTRA_COUNT);
-    return currentFilms;
-  }
-
-  currentFilms = allFilms.splice(INDEX_FIRST_ELEMENT, FILMS_EXTRA_COUNT);
-  return currentFilms;
-};
-
-const createExtraFilmsTemlpate = (category, films) => {
-  currentCategoryfilms = [];
-
+const getCurrentFilms = (category, films) => {
   switch (category) {
-    case Film.CATEGORY[Film.CATEGORY_INDEX.topRated]:
-      currentCategoryfilms = selectTopRatedFilms(films);
-      break;
+    case Category.TOP_RATED:
+      const sortedTopRatedFilms = films.slice()
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, FILMS_EXTRA_COUNT);
+      return sortedTopRatedFilms.filter((film) => film.rating > 0).length > 0 ?
+        sortedTopRatedFilms : false;
 
-    case Film.CATEGORY[Film.CATEGORY_INDEX.mostCommented]:
-      currentCategoryfilms = selectMostCommentedFilms(films);
-      break;
+    case Category.MOST_COMMENTED:
+      const sortedMostCommentedFilms = films.slice()
+        .sort((a, b) => b.comments.length - a.comments.length)
+        .slice(0, FILMS_EXTRA_COUNT);
+      return sortedMostCommentedFilms.filter((film) => film.comments.length > 0).length > 0 ?
+        sortedMostCommentedFilms : false;
   }
 
+  return false;
+};
+
+const createExtraFilmsTemlpate = (films, category) => {
   return (
-    currentCategoryfilms === false ? `` :
+    films === false ? `` :
       `
       <section class="films-list--extra">
         <h2 class="films-list__title">${category}</h2>
@@ -90,42 +36,23 @@ const createExtraFilmsTemlpate = (category, films) => {
 };
 
 
-let currentCategoryfilms = [];
-
-
-export default class FilmExtra {
+export default class FilmExtra extends AbstractComponent {
   constructor(category, films) {
+    super();
+
     this._category = category;
     this._films = films;
 
-    this._element = null;
     this._currentFilms = null;
   }
 
   getTemplate() {
-    return createExtraFilmsTemlpate(this._category, this._films);
+    this._currentFilms = getCurrentFilms(this._category, this._films);
+
+    return createExtraFilmsTemlpate(this._currentFilms, this._category);
   }
 
-  getElement() {
-    if (!this._element) {
-      const result = this.getTemplate();
-
-      if (result) {
-        createElement(result);
-        this._currentFilms = currentCategoryfilms;
-      }
-
-      this._element = result ? createElement(result) : ``;
-    }
-
-    return this._element;
-  }
-
-  getCurrentFilms() {
+  getFilms() {
     return this._currentFilms;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
