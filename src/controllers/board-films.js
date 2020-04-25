@@ -3,7 +3,7 @@ import ShowMoreButtonComponent from "../components/show-more-button.js";
 import FilmExtraComponent from "../components/film-extra.js";
 import DetailsPopupComponent from "../components/details-popup.js";
 import {render, remove} from "../utils/render.js";
-import {Film, FILMS_EXTRA_COUNT, FILMS_EMPTY} from "../const.js";
+import {Film, FILMS_EXTRA_COUNT} from "../const.js";
 
 
 const SHOWING_FILMS_COUNT_ON_START = 5;
@@ -50,20 +50,20 @@ const addFilmsToDOM = (arrayFilms, container, startIndexFilm, endIndexFilm) => {
 
 
       const detailsPopupComponent = new DetailsPopupComponent(film);
-      detailsPopupComponent.setElementClickHandler(`.film-details__close-btn`, onClosePopupClick);
+      detailsPopupComponent.setClosePopupClickHandler(onClosePopupClick);
 
 
       const filmCardComponent = new FilmCardComponent(film);
-      filmCardComponent.setElementClickHandler(`img`, onCoverClick);
-      filmCardComponent.setElementClickHandler(`.film-card__title`, onTitleClick);
-      filmCardComponent.setElementClickHandler(`.film-card__comments`, onCommentsClick);
+      filmCardComponent.setCoverClickHandler(onCoverClick);
+      filmCardComponent.setTitleClickHandler(onTitleClick);
+      filmCardComponent.setCommentsClickHandler(onCommentsClick);
 
       render(container, filmCardComponent);
     });
 };
 
 
-export default class FilmsController {
+export default class BoardFilmsController {
   constructor(container) {
     this._container = container;
   }
@@ -93,11 +93,11 @@ export default class FilmsController {
 
     const renderExtraFilms = () => {
       Film.CATEGORY.forEach((category) => {
-        const filmExtraComponent = new FilmExtraComponent(category, films);
+        const filmExtraComponent = new FilmExtraComponent(films, category);
         const filmExtraElement = filmExtraComponent.getElement();
-        const filmExtraContainer = filmExtraElement.querySelector(`.films-list__container`);
 
         if (filmExtraElement) {
+          const filmExtraContainer = filmExtraElement.querySelector(`.films-list__container`);
           const filmsExtra = filmExtraComponent.getFilms();
 
           addFilmsToDOM(filmsExtra, filmExtraContainer, 0, FILMS_EXTRA_COUNT);
@@ -109,9 +109,7 @@ export default class FilmsController {
 
     const container = this._container.getElement();
 
-    const isFilmsEmpty = films.length > FILMS_EMPTY ? false : true;
-
-    if (!isFilmsEmpty) {
+    if (films.length) {
       renderMainFilms();
       renderExtraFilms();
     }

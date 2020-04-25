@@ -1,4 +1,4 @@
-import {IndexMap, FILMS_EMPTY} from "./const.js";
+import {IndexMap} from "./const.js";
 import {render} from "./utils/render.js";
 import {countFilterCaterories} from "./filter-state.js";
 
@@ -10,9 +10,10 @@ import MainNavigationComponent from "./components/main-navigation.js";
 import SortComponent from "./components/sort.js";
 import FilterComponent from "./components/filter.js";
 import FilmsContainerComponent from "./components/films-container.js";
+import NoFilmsComponent from "./components/no-films.js";
 import FooterStatisticsComponent from "./components/footer-statistics.js";
 
-import FilmsController from "./controllers/films.js";
+import BoardFilmsController from "./controllers/board-films.js";
 
 
 const FILMS_COUNT = 18;
@@ -37,6 +38,23 @@ const renderSortAndMenu = () => {
   render(siteMainElement, new SortComponent());
 };
 
+const renderBoardFilms = () => {
+  if (films.length > 0) {
+    const filmsContainerComponent = new FilmsContainerComponent();
+    render(siteMainElement, filmsContainerComponent);
+
+    const filmsController = new BoardFilmsController(filmsContainerComponent);
+
+    render(siteMainElement, filmsContainerComponent);
+
+    filmsController.render(films);
+    return;
+  }
+
+  render(siteMainElement, new NoFilmsComponent());
+  return;
+};
+
 const renderFooterStatistics = () => {
   const footer = document.body.querySelector(`.footer`);
   const footerStatistics = footer.querySelector(`.footer__statistics`);
@@ -58,15 +76,6 @@ render(siteHeaderElement, new ProfileComponent(profile));
 const mainNavigationComponent = new MainNavigationComponent();
 const mainNavigationContainer = mainNavigationComponent.getElement();
 
-const isFilmsEmpty = films.length > FILMS_EMPTY ? false : true;
-
-const filmsContainerComponent = new FilmsContainerComponent(isFilmsEmpty);
-const filmsController = new FilmsController(filmsContainerComponent);
-
-
 renderSortAndMenu();
-
-render(siteMainElement, filmsContainerComponent);
-filmsController.render(films);
-
+renderBoardFilms();
 renderFooterStatistics();
