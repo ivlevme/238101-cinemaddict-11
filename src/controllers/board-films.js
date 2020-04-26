@@ -3,7 +3,7 @@ import ShowMoreButtonComponent from "../components/show-more-button.js";
 import FilmExtraComponent from "../components/film-extra.js";
 import DetailsPopupComponent from "../components/details-popup.js";
 import {render, remove} from "../utils/render.js";
-import {Film, FILMS_EXTRA_COUNT} from "../const.js";
+import {Film, SortType, FILMS_EXTRA_COUNT} from "../const.js";
 
 
 const SHOWING_FILMS_COUNT_ON_START = 5;
@@ -62,33 +62,77 @@ const addFilmsToDOM = (arrayFilms, container, startIndexFilm, endIndexFilm) => {
     });
 };
 
+const getSortedFilms = (films, sortType, from, to) => {
+  let sortedFilms = [];
+  const showingFilms = films.slice();
+
+  switch (sortType) {
+    case SortType.DATE:
+      sortedFilms = showingFilms.sort((a, b) => b.releaseDate - a.releaseDate);
+      break;
+    case SortType.RATING:
+      sortedFilms = showingFilms.sort((a, b) => b.rating - a.rating);
+      break;
+    case SortType.DEFAULT:
+      sortedFilms = showingFilms;
+      break;
+  }
+
+  return sortedFilms.slice(from, to);
+};
+
 
 export default class BoardFilmsController {
-  constructor(container) {
+  constructor(container, sortComponent) {
     this._container = container;
+
+    this._showMoreButtonComponent = new ShowMoreButtonComponent();
+    this._sortComponent = sortComponent;
   }
 
   render(films) {
     const renderMainFilms = () => {
+      const renderShowMoreButton = () => {
+        if (showingFilmsCount >= films.length) {
+          return;
+        }
+
+        render(buttonContainer, this._showMoreButtonComponent);
+
+        this._showMoreButtonComponent.setClickHandler(() => {
+          const prevFilmsCount = showingFilmsCount;
+          showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
+
+          const sortedFilms = getSortedFilms(films, this._sortComponent.getSortType(),
+              prevFilmsCount, showingFilmsCount);
+
+          addFilmsToDOM(sortedFilms, filmsListContainer, 0, showingFilmsCount);
+
+          if (showingFilmsCount >= films.length) {
+            remove(this._showMoreButtonComponent);
+          }
+        });
+      };
+
+
       const filmsListContainer = container.querySelector(`.films-list__container`);
+      const buttonContainer = container.querySelector(`.films-list`);
+
       let showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
 
       addFilmsToDOM(films, filmsListContainer, 0, showingFilmsCount);
+      renderShowMoreButton();
 
-      const showMoreButtonComponent = new ShowMoreButtonComponent();
+      this._sortComponent.setSortTypeChangeHandler((sortType) => {
+        showingFilmsCount = SHOWING_FILMS_COUNT_BY_BUTTON;
+        filmsListContainer.innerHTML = ``;
 
-      showMoreButtonComponent.setClickHandler(() => {
-        const prevFilmCount = showingFilmsCount;
-        showingFilmsCount = showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
+        const sortedFilms = getSortedFilms(films, sortType, 0, showingFilmsCount);
 
-        addFilmsToDOM(films, filmsListContainer, prevFilmCount, showingFilmsCount);
 
-        if (showingFilmsCount >= films.length) {
-          remove(showMoreButtonComponent);
-        }
+        addFilmsToDOM(sortedFilms, filmsListContainer, 0, showingFilmsCount);
+        renderShowMoreButton();
       });
-
-      render(container.querySelector(`.films-list`), showMoreButtonComponent);
     };
 
     const renderExtraFilms = () => {
@@ -108,6 +152,7 @@ export default class BoardFilmsController {
     };
 
     const container = this._container.getElement();
+
 
     if (films.length) {
       renderMainFilms();
