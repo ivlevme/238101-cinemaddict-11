@@ -1,4 +1,6 @@
 const FILMS_EXTRA_COUNT = 2;
+const FILMS_EMPTY = 0;
+
 
 const MONTH_NAMES = [
   `January`,
@@ -74,18 +76,16 @@ const Film = {
     `Mary Beth Hughes`,
     `Dan Duryea`,
   ],
-  CATEGORY: [
-    `Top rated`,
-    `Most commented`,
-  ],
-  CATEGORY_INDEX: {
-    topRated: 0,
-    mostCommented: 1,
-  },
+  CATEGORY: new Set([`Top Rated`, `Most Commented`]),
   SORT_PARAM: {
     comments: `comments.length`,
     rating: `rating`,
   }
+};
+
+const Category = {
+  TOP_RATED: `Top Rated`,
+  MOST_COMMENTED: `Most Commented`,
 };
 
 const Comment = {
@@ -107,4 +107,5 @@ const Comment = {
   ]
 };
 
-export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Comment, FILTER_CATEGORIES, IndexMap};
+export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Category, Comment, FILTER_CATEGORIES, IndexMap,
+  FILMS_EMPTY};
