@@ -1,6 +1,12 @@
 const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
+const SortType = {
+  DATE: `date`,
+  RATING: `rating`,
+  DEFAULT: `default`,
+};
+
 
 const MONTH_NAMES = [
   `January`,
@@ -107,5 +113,5 @@ const Comment = {
   ]
 };
 
-export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Category, Comment, FILTER_CATEGORIES, IndexMap,
+export {MONTH_NAMES, FILMS_EXTRA_COUNT, SortType, Film, Category, Comment, FILTER_CATEGORIES, IndexMap,
   FILMS_EMPTY};

@@ -31,28 +31,17 @@ const renderFilters = () => {
   }
 };
 
-const renderSortAndMenu = () => {
-  renderFilters();
-
-  render(siteMainElement, mainNavigationComponent);
-  render(siteMainElement, new SortComponent());
-};
-
 const renderBoardFilms = () => {
   if (films.length > 0) {
     const filmsContainerComponent = new FilmsContainerComponent();
     render(siteMainElement, filmsContainerComponent);
 
-    const filmsController = new BoardFilmsController(filmsContainerComponent);
-
-    render(siteMainElement, filmsContainerComponent);
-
+    const filmsController = new BoardFilmsController(filmsContainerComponent, sortComponent);
     filmsController.render(films);
     return;
   }
 
   render(siteMainElement, new NoFilmsComponent());
-  return;
 };
 
 const renderFooterStatistics = () => {
@@ -76,6 +65,10 @@ render(siteHeaderElement, new ProfileComponent(profile));
 const mainNavigationComponent = new MainNavigationComponent();
 const mainNavigationContainer = mainNavigationComponent.getElement();
 
-renderSortAndMenu();
+const sortComponent = new SortComponent();
+
+renderFilters();
+render(siteMainElement, mainNavigationComponent);
+render(siteMainElement, sortComponent);
 renderBoardFilms();
 renderFooterStatistics();
