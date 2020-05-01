@@ -20,7 +20,7 @@ const getRandomDate = () => {
 
 const generateFilm = () => {
   const isFavorites = Math.random() > 0.5;
-  const isHistory = Math.random() > 0.5;
+  const isWatched = Math.random() > 0.5;
   const isWatchlist = Math.random() > 0.5;
 
   return {
@@ -32,7 +32,7 @@ const generateFilm = () => {
     director: getRandomArrayItem(Film.STAFF),
     genres: generateRandomArray(getRandomIntegerNumber(1, 4), Film.GENRE),
     isFavorites,
-    isHistory,
+    isWatched,
     isWatchlist,
     name: getRandomArrayItem(Film.NAME),
     original: getRandomArrayItem(Film.NAME),
