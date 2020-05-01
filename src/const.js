@@ -1,12 +1,6 @@
 const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
-const SortType = {
-  DATE: `date`,
-  RATING: `rating`,
-  DEFAULT: `default`,
-};
-
 
 const MONTH_NAMES = [
   `January`,
@@ -33,6 +27,7 @@ const IndexMap = {
   KEY: 0,
   VALUE: 1,
 };
+
 
 const Film = {
   DESCRIPTION: [
@@ -83,10 +78,6 @@ const Film = {
     `Dan Duryea`,
   ],
   CATEGORY: new Set([`Top Rated`, `Most Commented`]),
-  SORT_PARAM: {
-    comments: `comments.length`,
-    rating: `rating`,
-  }
 };
 
 const Category = {
@@ -106,12 +97,26 @@ const Comment = {
     `Tim Macoveev`,
   ],
   EMOJI: [
-    `angry`,
-    `puke`,
-    `sleeping`,
     `smile`,
+    `sleeping`,
+    `puke`,
+    `angry`,
   ]
 };
 
-export {MONTH_NAMES, FILMS_EXTRA_COUNT, SortType, Film, Category, Comment, FILTER_CATEGORIES, IndexMap,
-  FILMS_EMPTY};
+const Sort = {
+  BUTTONS: [`default`, `date`, `rating`],
+  BUTTON_TEXT: {
+    DEFAULT: `Sort by default`,
+    DATE: `Sort by date`,
+    RATING: `Sort by rating`,
+  },
+  TYPE: {
+    DATE: `date`,
+    RATING: `rating`,
+    DEFAULT: `default`,
+  }
+};
+
+export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FILTER_CATEGORIES,
+  IndexMap, FILMS_EMPTY};

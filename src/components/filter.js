@@ -1,7 +1,8 @@
 import AbstractComponent from "./abstract-component.js";
 
+import {IndexMap} from "../const.js";
 
-const createFilterTemplate = (name, count) => {
+const createFilterButtonMarkup = (name, count) => {
   return (`
     <a href="#${name}" class="main-navigation__item">
       ${name} <span class="main-navigation__item-count">${count}</span>
@@ -9,16 +10,37 @@ const createFilterTemplate = (name, count) => {
   `).trim();
 };
 
+const createFilterButtonsMarkup = (filterState) => {
+  const filterButtons = [];
+
+  for (const filterCategoryState of filterState) {
+    const name = filterCategoryState[IndexMap.KEY];
+    const value = filterCategoryState[IndexMap.VALUE];
+
+    filterButtons.push(createFilterButtonMarkup(name, value));
+  }
+
+  return filterButtons.join(`\n`);
+};
+
+const createFilterTemplate = (filterState) => {
+  return (`
+    <div class="main-navigation__items">
+      <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
+      ${createFilterButtonsMarkup(filterState)}
+    </div>
+  `).trim();
+};
+
 
 export default class Filter extends AbstractComponent {
-  constructor(name, count) {
+  constructor(filterState) {
     super();
 
-    this._name = name;
-    this._count = count;
+    this._filterState = filterState;
   }
 
   getTemplate() {
-    return createFilterTemplate(this._name, this._count);
+    return createFilterTemplate(this._filterState);
   }
 }

@@ -1,4 +1,11 @@
-import {FILTER_CATEGORIES} from "./const.js";
+import {FILTER_CATEGORIES} from "../const.js";
+
+
+const FilmFilterCategory = {
+  WATCHLIST: `isWatchlist`,
+  HISTORY: `isWatched`,
+  FAVORITES: `isFavorites`,
+};
 
 
 const countFilterCaterories = (films) => {
@@ -10,7 +17,7 @@ const countFilterCaterories = (films) => {
 
   films.forEach((film) => {
     FILTER_CATEGORIES.forEach((category) => {
-      const currentCategory = `is${category}`;
+      const currentCategory = FilmFilterCategory[category.toUpperCase()];
 
       state.set(category, film[currentCategory] ? state.get(category) + 1 : state.get(category));
     });
