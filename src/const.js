@@ -2,21 +2,6 @@ const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
 
-const MONTH_NAMES = [
-  `January`,
-  `February`,
-  `March`,
-  `April`,
-  `May`,
-  `June`,
-  `July`,
-  `August`,
-  `September`,
-  `October`,
-  `November`,
-  `December`,
-];
-
 const FILTER_CATEGORIES = [
   `Watchlist`,
   `History`,
@@ -118,5 +103,4 @@ const Sort = {
   }
 };
 
-export {MONTH_NAMES, FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FILTER_CATEGORIES,
-  IndexMap, FILMS_EMPTY};
+export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FILTER_CATEGORIES, IndexMap, FILMS_EMPTY};

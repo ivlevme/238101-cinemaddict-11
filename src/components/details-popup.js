@@ -1,15 +1,16 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {MONTH_NAMES, Comment} from '../const.js';
-import {castTimeFormat, formatRuntime} from '../utils/common.js';
+import {Comment} from '../const.js';
+import {formatRuntime} from '../utils/common.js';
+
+import moment from "moment";
 
 
 const formatReleaseDate = (date) => {
-  return `${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
+  return moment(date).format(`DD MMMM YYYY`);
 };
 
 const formatCommentDate = (date) => {
-  return `${date.getFullYear()}/${date.getDate()}/${date.getMonth()}
-  ${castTimeFormat(date.getHours())}:${castTimeFormat(date.getMinutes())}`;
+  return moment(date).fromNow();
 };
 
 const createGenresMarkup = (genres) => {

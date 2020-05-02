@@ -1,3 +1,6 @@
+import moment from "moment";
+
+
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length);
 
@@ -14,16 +17,15 @@ const generateRandomArray = (count, element) => {
     .map(typeof element === `function` ? element : () => getRandomArrayItem(element));
 };
 
-const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
-};
-
 const formatRuntime = (date) => {
-  const hours = date.getHours() > 1 ? `${date.getHours()}h` : ``;
-  const minutes = date.getMinutes() > 0 ? `${date.getMinutes()}m` : ``;
+  const countHours = Math.floor(moment.duration(date, `minutes`).asHours());
+  const countMinutes = date - countHours * 60;
+
+  const hours = countHours > 1 ? `${countHours}h` : ``;
+  const minutes = countMinutes > 0 ? `${countMinutes}m` : ``;
+
   return `${hours} ${minutes}`;
 };
 
 
-export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, castTimeFormat,
-  formatRuntime};
+export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, formatRuntime};
