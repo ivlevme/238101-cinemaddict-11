@@ -4,7 +4,7 @@ import {generateProfile} from "./mock/profile.js";
 import PageController from "./controllers/page.js";
 
 
-const FILMS_COUNT = 1;
+const FILMS_COUNT = 13;
 
 
 const films = generateFilms(FILMS_COUNT);
