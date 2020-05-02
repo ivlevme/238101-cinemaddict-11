@@ -3,6 +3,8 @@ import {generateRandomArray, getRandomArrayItem, getRandomIntegerNumber} from '.
 
 
 const COUNT_DAYS_IN_YEAR = 365;
+const COUNT_MINUTES_IN_DAY = 1440;
+
 
 const getRandomDate = () => {
   const targetDate = new Date();
@@ -39,7 +41,7 @@ const generateFilm = () => {
     poster: getRandomArrayItem(Film.POSTER),
     rating: getRandomIntegerNumber(10, 100) / 10,
     releaseDate: getRandomDate(),
-    runtime: getRandomDate(),
+    runtime: getRandomDate().getMinutes() + getRandomIntegerNumber(0, COUNT_MINUTES_IN_DAY),
     writers: generateRandomArray(getRandomIntegerNumber(1, 4), Film.STAFF),
   };
 };

@@ -1,4 +1,4 @@
-import {render, replace, remove} from "../utils/render.js";
+import {render, remove} from "../utils/render.js";
 
 import DetailsPopupComponent from "../components/details-popup";
 import FilmCardComponent from "../components/film-card.js";
@@ -37,8 +37,8 @@ export default class FilmController {
     this._setFilmCardListeners();
 
     if (oldDetailsPopupComponent && oldFilmCardComponent) {
-      replace(this._filmCardComponent, oldFilmCardComponent);
-      replace(this._detailsPopupComponent, oldDetailsPopupComponent);
+      this.replaceComponent(this._filmCardComponent, oldFilmCardComponent);
+      this.replaceComponent(this._detailsPopupComponent, oldDetailsPopupComponent);
 
       this.setDetailsPopupListeners(this._detailsPopupComponent);
       return;
@@ -53,6 +53,18 @@ export default class FilmController {
 
   setDefaultView() {
     this._removeDetailsPopup();
+  }
+
+  replaceComponent(newComponent, oldComponent) {
+    const parentElement = oldComponent.getElement().parentElement;
+    const newElement = newComponent.getElement();
+    const oldElement = oldComponent.getElement();
+
+    const isExistElements = !!(parentElement && newElement && oldElement);
+
+    if (isExistElements && parentElement.contains(oldElement)) {
+      parentElement.replaceChild(newElement, oldElement);
+    }
   }
 
   _onEscKeyDown(evt) {
