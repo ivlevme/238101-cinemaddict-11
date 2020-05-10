@@ -2,7 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Comment} from '../const.js';
 import {formatRuntime} from '../utils/common.js';
 
-import moment from "moment";
+import moment from 'moment';
 
 
 const formatReleaseDate = (date) => {

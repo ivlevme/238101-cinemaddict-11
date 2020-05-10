@@ -26,6 +26,7 @@ const generateFilm = () => {
   const isWatchlist = Math.random() > 0.5;
 
   return {
+    id: String(new Date() + Math.random()),
     actors: generateRandomArray(getRandomIntegerNumber(1, 4), Film.STAFF),
     ageLimit: getRandomIntegerNumber(0, 19),
     comments: generateRandomArray(getRandomIntegerNumber(0, 6), generateComment),

@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-component.js";
 import {Sort} from "../const.js";
 
 
-const createSortButtonsMarkup = (sortButtons, currenSortType) => {
+const createSortButtonsMarkup = (sortButtons, activeSortType) => {
   return sortButtons
     .map((sortButton) =>{
       sortButton = sortButton.toUpperCase();
@@ -11,7 +11,7 @@ const createSortButtonsMarkup = (sortButtons, currenSortType) => {
       return (`
         <li>
           <a href="#" data-sort-type="${Sort.TYPE[sortButton]}" class="sort__button
-            ${currenSortType === Sort.TYPE[sortButton] ? `sort__button--active` : ``}">
+            ${activeSortType === Sort.TYPE[sortButton] ? `sort__button--active` : ``}">
             ${Sort.BUTTON_TEXT[sortButton]}
           </a>
         </li>
@@ -19,29 +19,24 @@ const createSortButtonsMarkup = (sortButtons, currenSortType) => {
     }).join(`\n`);
 };
 
-const createSortTemplate = (currenSortType) => {
+const createSortTemplate = (activeSortType) => {
   return (`
     <ul class="sort">
-      ${createSortButtonsMarkup(Sort.BUTTONS, currenSortType)}
+      ${createSortButtonsMarkup(Sort.BUTTONS, activeSortType)}
     </ul>
   `).trim();
 };
 
 
 export default class SortComponent extends AbstractComponent {
-  constructor() {
+  constructor(activeSortType) {
     super();
 
-    this._currenSortType = Sort.TYPE.DEFAULT;
+    this._activeSortType = activeSortType;
   }
 
   getTemplate() {
-    return createSortTemplate(this._currenSortType);
-  }
-
-
-  getSortType() {
-    return this._currenSortType;
+    return createSortTemplate(this._activeSortType);
   }
 
   setSortTypeChangeHandler(handler) {
@@ -54,16 +49,13 @@ export default class SortComponent extends AbstractComponent {
 
       const sortType = evt.target.dataset.sortType;
 
-      if (this._currenSortType === sortType) {
+      if (this._activeSortType === sortType) {
         return;
       }
 
-      this._currenSortType = sortType;
+      this._activeSortType = sortType;
 
-      this.getElement().querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
-      evt.target.classList.add(`sort__button--active`);
-
-      handler();
+      handler(this._activeSortType);
     });
   }
 }

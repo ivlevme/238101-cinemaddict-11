@@ -1,6 +1,12 @@
 const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
+const FilterType = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`,
+};
 
 const FILTER_CATEGORIES = [
   `Watchlist`,
@@ -103,4 +109,6 @@ const Sort = {
   }
 };
 
-export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FILTER_CATEGORIES, IndexMap, FILMS_EMPTY};
+
+export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FilterType, FILTER_CATEGORIES, IndexMap,
+  FILMS_EMPTY};

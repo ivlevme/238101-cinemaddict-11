@@ -1,30 +1,43 @@
-import {FILTER_CATEGORIES} from "../const.js";
+import {FilterType, Category} from "../const.js";
 
 
-const FilmFilterCategory = {
-  WATCHLIST: `isWatchlist`,
-  HISTORY: `isWatched`,
-  FAVORITES: `isFavorites`,
+const MIN_RATING = 0;
+const MIN_COUNT_COMMENTS = 0;
+
+
+const getFilmsByFilter = (films, filterType) => {
+  switch (filterType) {
+    case FilterType.ALL:
+      return films;
+
+    case FilterType.WATCHLIST:
+      return films.filter((film) => film.isWatchlist);
+
+    case FilterType.HISTORY:
+      return films.filter((film) => film.isWatched);
+
+    case FilterType.FAVORITES:
+      return films.filter((film) => film.isFavorites);
+  }
+
+  return films;
+};
+
+const getFilmsByCategory = (films, category) => {
+  switch (category) {
+    case Category.TOP_RATED:
+      return films.slice()
+        .sort((a, b) => b.rating - a.rating)
+        .filter((film) => film.rating > MIN_RATING);
+
+    case Category.MOST_COMMENTED:
+      return films.slice()
+        .sort((a, b) => b.comments.length - a.comments.length)
+        .filter((film) => film.comments.length > MIN_COUNT_COMMENTS);
+  }
+
+  return false;
 };
 
 
-const countFilterCaterories = (films) => {
-  const state = new Map();
-
-  FILTER_CATEGORIES.forEach((category) => {
-    state.set(category, 0);
-  });
-
-  films.forEach((film) => {
-    FILTER_CATEGORIES.forEach((category) => {
-      const currentCategory = FilmFilterCategory[category.toUpperCase()];
-
-      state.set(category, film[currentCategory] ? state.get(category) + 1 : state.get(category));
-    });
-  });
-
-  return state;
-};
-
-
-export {countFilterCaterories};
+export {getFilmsByFilter, getFilmsByCategory};
