@@ -1,72 +1,59 @@
-import {countFilterCaterories} from "../utils/filter.js";
-import {RenderPosition, render, remove} from "../utils/render.js";
+import {render} from "../utils/render.js";
 
-
-import FilterComponent from "../components/filter.js";
 import FilmsContainerComponent from "../components/films-container.js";
 import NoFilmsComponent from "../components/no-films.js";
 import FooterStatisticsComponent from "../components/footer-statistics.js";
 import ProfileComponent from "../components/profile.js";
 import MainNavigationComponent from "../components/main-navigation.js";
-import SortComponent from "../components/sort.js";
 
 
-import BoardFilmsController from "./board.js";
+import BoardController from "./board.js";
+import FilterController from "./filter.js";
+import SortController from "./sort.js";
 
 
 export default class PageController {
-  constructor(headerContainer, mainContainer) {
+  constructor(headerContainer, mainContainer, footerContainer, filmsModel, commentsModel) {
     this._headerConatiner = headerContainer;
     this._mainConatiner = mainContainer;
+    this._footerContainer = footerContainer;
 
-
-    this._films = null;
-
+    this._filmsModel = filmsModel;
+    this._commentsModel = commentsModel;
 
     this._profileComponent = null;
-    this._filterComponent = null;
 
     this._mainNavigationComponent = new MainNavigationComponent();
     this._mainNavigationContainer = this._mainNavigationComponent.getElement();
 
-    this._sortComponent = new SortComponent();
+    this._filmsContainerComponent = new FilmsContainerComponent();
+
+    this._boardController = new BoardController(this._filmsContainerComponent, this._filmsModel,
+        this._commentsModel);
+    this._sortController = new SortController(this._mainConatiner, this._filmsModel);
+    this._filterController = new FilterController(this._mainNavigationContainer, this._filmsModel,
+        this._sortController);
   }
 
-  render(films, profile) {
-    this._films = films;
-    this._profileComponent = new ProfileComponent(profile);
+  render() {
+    this._profileComponent = new ProfileComponent();
 
 
     render(this._headerConatiner, this._profileComponent);
     render(this._mainConatiner, this._mainNavigationComponent);
 
-    this.renderFilters(this._films);
-
-    render(this._mainConatiner, this._sortComponent);
+    this._filterController.render();
+    this._sortController.render();
 
     this._renderBoardFilms();
     this._renderFooterStatistics();
   }
 
-  renderFilters(films) {
-    const currentFilterCategoriesState = countFilterCaterories(films);
-
-    if (this._filterComponent) {
-      remove(this._filterComponent);
-    }
-
-    this._filterComponent = new FilterComponent(currentFilterCategoriesState);
-
-    render(this._mainNavigationContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
-  }
-
   _renderBoardFilms() {
-    if (this._films.length > 0) {
-      const filmsContainerComponent = new FilmsContainerComponent();
-      render(this._mainConatiner, filmsContainerComponent);
+    if (this._filmsModel.getFilms().length > 0) {
+      render(this._mainConatiner, this._filmsContainerComponent);
 
-      const filmsController = new BoardFilmsController(filmsContainerComponent, this._sortComponent, this);
-      filmsController.render(this._films);
+      this._boardController.render();
       return;
     }
 
@@ -74,10 +61,9 @@ export default class PageController {
   }
 
   _renderFooterStatistics() {
-    const footer = document.body.querySelector(`.footer`);
-    const footerStatistics = footer.querySelector(`.footer__statistics`);
+    const footerStatistics = this._footerContainer.querySelector(`.footer__statistics`);
 
-    const footerStatisticsComponent = new FooterStatisticsComponent(this._films.length);
+    const footerStatisticsComponent = new FooterStatisticsComponent(this._filmsModel.getFilms().length);
 
     render(footerStatistics, footerStatisticsComponent);
   }
