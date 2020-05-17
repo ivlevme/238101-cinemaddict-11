@@ -20,6 +20,10 @@ export default class FilmExtra extends AbstractComponent {
     this._category = category;
   }
 
+  getCategory() {
+    return this._category;
+  }
+
   getTemplate() {
     return createExtraFilmsTemlpate(this._category);
   }

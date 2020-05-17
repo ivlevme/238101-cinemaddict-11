@@ -13,12 +13,13 @@ import SortController from "./sort.js";
 
 
 export default class PageController {
-  constructor(headerContainer, mainContainer, footerContainer, filmsModel) {
+  constructor(headerContainer, mainContainer, footerContainer, filmsModel, commentsModel) {
     this._headerConatiner = headerContainer;
     this._mainConatiner = mainContainer;
     this._footerContainer = footerContainer;
 
     this._filmsModel = filmsModel;
+    this._commentsModel = commentsModel;
 
     this._profileComponent = null;
 
@@ -27,14 +28,15 @@ export default class PageController {
 
     this._filmsContainerComponent = new FilmsContainerComponent();
 
-    this._boardController = new BoardController(this._filmsContainerComponent, this._filmsModel);
+    this._boardController = new BoardController(this._filmsContainerComponent, this._filmsModel,
+        this._commentsModel);
     this._sortController = new SortController(this._mainConatiner, this._filmsModel);
     this._filterController = new FilterController(this._mainNavigationContainer, this._filmsModel,
         this._sortController);
   }
 
-  render(profile) {
-    this._profileComponent = new ProfileComponent(profile);
+  render() {
+    this._profileComponent = new ProfileComponent();
 
 
     render(this._headerConatiner, this._profileComponent);

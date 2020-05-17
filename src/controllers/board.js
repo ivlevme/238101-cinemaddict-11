@@ -1,4 +1,4 @@
-import {Film} from "../const.js";
+import {Film, Category} from "../const.js";
 import {render, remove} from "../utils/render.js";
 
 import ShowMoreButtonComponent from "../components/show-more-button.js";
@@ -13,20 +13,31 @@ const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
 const SHOWING_EXTRA_FILMS_COUNT_ON_START = 2;
 
+const ControllerType = {
+  MAIN: `main`,
+  TOP_RATED: Category.TOP_RATED,
+  MOST_COMMENTED: Category.MOST_COMMENTED,
+};
+
 
 export default class BoardController {
-  constructor(container, filmsModel) {
+  constructor(container, filmsModel, commentsModel) {
     this._container = container;
+
     this._filmsModel = filmsModel;
+    this._commentsModel = commentsModel;
 
     this._containerElement = this._container.getElement();
     this._buttonContainer = this._containerElement.querySelector(`.films-list`);
     this._filmsListContainer = this._containerElement.querySelector(`.films-list__container`);
 
     this._showedFilmControllers = {
-      main: [],
-      extra: [],
+      [ControllerType.MAIN]: [],
+      [ControllerType.TOP_RATED]: [],
+      [ControllerType.MOST_COMMENTED]: [],
     };
+
+    this._filmExtraComponents = [];
 
     this._filmControllerTypes = Object.keys(this._showedFilmControllers);
 
@@ -51,9 +62,13 @@ export default class BoardController {
     }
   }
 
+  _removeFilms(typeController) {
+    this._showedFilmControllers[typeController].forEach((filmController) => filmController.destroy());
+    this._showedFilmControllers[typeController] = [];
+  }
+
   _removeMainFilms() {
-    this._showedFilmControllers.main.forEach((filmController) => filmController.destroy());
-    this._showedFilmControllers.main = [];
+    this._removeFilms(ControllerType.MAIN);
 
     this._showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
   }
@@ -73,7 +88,22 @@ export default class BoardController {
     const isSuccess = this._filmsModel.updateFilm(oldData.id, newData);
 
     if (isSuccess) {
+      this._removeFilms(ControllerType.MOST_COMMENTED);
+
+      const mostCommentedComponentIndex = this._filmExtraComponents
+      .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
+
+      if (mostCommentedComponentIndex !== -1) {
+        remove(this._filmExtraComponents[mostCommentedComponentIndex]);
+
+        this._filmExtraComponents = [].concat(
+            this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
+            this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
+        );
+      }
+
       this._updateAllControllers(oldData, newData);
+      this._renderExtraCategory(Category.MOST_COMMENTED);
     }
   }
 
@@ -101,21 +131,28 @@ export default class BoardController {
 
   _renderExtraFilms() {
     Film.CATEGORY.forEach((category) => {
-      const showingFilms = this._filmsModel.getExtraFilms(category)
+      this._renderExtraCategory(category);
+    });
+  }
+
+  _renderExtraCategory(category) {
+    const showingFilms = this._filmsModel.getExtraFilms(category)
           .slice(0, SHOWING_EXTRA_FILMS_COUNT_ON_START);
 
-      if (showingFilms.length > 0) {
-        const filmExtraComponent = new FilmExtraComponent(category);
+    if (showingFilms.length > 0) {
+      const filmExtraComponent = new FilmExtraComponent(category);
+      this._filmExtraComponents.push(filmExtraComponent);
 
-        const filmExtraContainer = filmExtraComponent.getElement()
-          .querySelector(`.films-list__container`);
+      const filmExtraContainer = filmExtraComponent.getElement()
+        .querySelector(`.films-list__container`);
 
-        const newFilms = renderFilms(showingFilms, filmExtraContainer, this._onDataChange, this._onViewChange);
-        this._showedFilmControllers.extra = this._showedFilmControllers.extra.concat(newFilms);
+      const newFilms = renderFilms(showingFilms, filmExtraContainer, this._commentsModel, this._onDataChange,
+          this._onViewChange);
 
-        render(this._containerElement, filmExtraComponent);
-      }
-    });
+      this._showedFilmControllers[category] = this._showedFilmControllers[category].concat(newFilms);
+
+      render(this._containerElement, filmExtraComponent);
+    }
   }
 
   _renderShowMoreButton() {
@@ -145,7 +182,8 @@ export default class BoardController {
   }
 
   _updateMainBoard(films) {
-    const newFilms = renderFilms(films, this._filmsListContainer, this._onDataChange, this._onViewChange);
+    const newFilms = renderFilms(films, this._filmsListContainer, this._commentsModel, this._onDataChange,
+        this._onViewChange);
 
     this._showedFilmControllers.main = this._showedFilmControllers.main.concat(newFilms);
   }
