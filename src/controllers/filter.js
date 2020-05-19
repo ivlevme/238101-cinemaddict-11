@@ -14,6 +14,8 @@ export default class FilterController {
     this._activeFilterType = FilterType.ALL;
     this._filterComponent = null;
 
+    this._menuChengeHandlers = [];
+
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
 
@@ -52,10 +54,21 @@ export default class FilterController {
     this._filmsModel.setSortType(Sort.TYPE.DEFAULT);
 
     this._activeFilterType = filterType;
+
+    this._callHandlers(this._menuChengeHandlers);
+
     this.render();
   }
 
   _onDataChange() {
     this.render();
+  }
+
+  setMenuChangeHandler(handler) {
+    this._menuChengeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
   }
 }
