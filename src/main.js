@@ -7,7 +7,7 @@ import FilmsModel from "./models/films.js";
 import CommentsModel from "./models/comments.js";
 
 
-const FILMS_COUNT = 2;
+const FILMS_COUNT = 5;
 const COMMENTS_COUNT = 20;
 
 const comments = generateComments(COMMENTS_COUNT);

@@ -196,4 +196,12 @@ export default class BoardController {
   _onFilterChange() {
     this._updateMainFilms();
   }
+
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
+  }
 }

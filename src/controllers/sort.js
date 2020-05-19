@@ -7,6 +7,7 @@ import SortComponent from "../components/sort.js";
 export default class SortController {
   constructor(container, filmsModel, boardController) {
     this._container = container;
+
     this._filmsModel = filmsModel;
     this._boardController = boardController;
 
@@ -50,5 +51,13 @@ export default class SortController {
 
   _onDataChange() {
     this.render();
+  }
+
+  hide() {
+    this._sortComponent.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
   }
 }

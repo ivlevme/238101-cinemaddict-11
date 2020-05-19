@@ -21,14 +21,22 @@ const generateRandomArray = (count, element) => {
     .map(typeof element === `function` ? element : () => getRandomArrayItem(element));
 };
 
-const formatRuntime = (date) => {
-  const countHours = Math.floor(moment.duration(date, `minutes`).asHours());
-  const countMinutes = date - countHours * COUNT_MINUTES_IN_HOUR;
+const countHoursFromMinuties = (minutes) => {
+  return Math.floor(moment.duration(minutes, `minutes`).asHours());
+};
 
-  const hours = countHours >= 1 ? `${countHours}h` : ``;
-  const minutes = countMinutes > 0 ? `${countMinutes}m` : ``;
+const countRemainsMinutesFromHours = (allMinuties, countHours) => {
+  return allMinuties - countHours * COUNT_MINUTES_IN_HOUR;
+};
 
-  return `${hours} ${minutes}`;
+const formatRuntime = (minutes) => {
+  const countHours = countHoursFromMinuties(minutes);
+  const countRemainsMinutes = countRemainsMinutesFromHours(minutes, countHours);
+
+  const hoursFormat = countHours >= 1 ? `${countHours}h` : ``;
+  const minutesFormat = countRemainsMinutes > 0 ? `${countRemainsMinutes}m` : ``;
+
+  return `${hoursFormat} ${minutesFormat}`;
 };
 
 const getRandomDate = () => {
@@ -51,4 +59,4 @@ const formatCommentDate = (date) => {
 
 
 export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, formatRuntime, getRandomDate,
-  formatCommentDate};
+  formatCommentDate, countHoursFromMinuties, countRemainsMinutesFromHours};
