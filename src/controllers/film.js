@@ -7,6 +7,8 @@ import CommentsLoadingComponent from "../components/comments-loading.js";
 
 import CommentController from "./comment.js";
 
+import FilmModel from "../models/film.js";
+
 export default class FilmController {
   constructor(container, commentsModel, onDataChange, onViewChange, api) {
     this._container = container;
@@ -195,25 +197,29 @@ export default class FilmController {
   _onWatchlistButtonClick(evt) {
     evt.preventDefault();
 
-    this._onDataChange(this._film, Object.assign({}, this._film, {
-      isWatchlist: !this._film.isWatchlist
-    }));
+    const newFilm = FilmModel.clone(this._film);
+    newFilm.isWatchlist = !newFilm.isWatchlist;
+
+    this._onDataChange(this._film, newFilm);
   }
 
   _onWatchedButtonClick(evt) {
     evt.preventDefault();
 
-    this._onDataChange(this._film, Object.assign({}, this._film, {
-      isWatched: !this._film.isWatched
-    }));
+    const newFilm = FilmModel.clone(this._film);
+    newFilm.isWatched = !newFilm.isWatched;
+    newFilm.watchingDate = new Date();
+
+    this._onDataChange(this._film, newFilm);
   }
 
   _onFavoriteButtonClick(evt) {
     evt.preventDefault();
 
-    this._onDataChange(this._film, Object.assign({}, this._film, {
-      isFavorites: !this._film.isFavorites
-    }));
+    const newFilm = FilmModel.clone(this._film);
+    newFilm.isFavorites = !newFilm.isFavorites;
+
+    this._onDataChange(this._film, newFilm);
   }
 
   _onSubmit(evt) {

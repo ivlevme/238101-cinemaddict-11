@@ -87,26 +87,29 @@ export default class BoardController {
   }
 
   _onDataChange(oldData, newData) {
-    const isSuccess = this._filmsModel.updateFilm(oldData.id, newData);
+    this._api.updateFilm(oldData.id, newData)
+      .then((filmModel) => {
+        const isSuccess = this._filmsModel.updateFilm(oldData.id, filmModel);
 
-    if (isSuccess) {
-      this._removeFilms(ControllerType.MOST_COMMENTED);
+        if (isSuccess) {
+          this._removeFilms(ControllerType.MOST_COMMENTED);
 
-      const mostCommentedComponentIndex = this._filmExtraComponents
-      .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
+          const mostCommentedComponentIndex = this._filmExtraComponents
+          .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
 
-      if (mostCommentedComponentIndex !== -1) {
-        remove(this._filmExtraComponents[mostCommentedComponentIndex]);
+          if (mostCommentedComponentIndex !== -1) {
+            remove(this._filmExtraComponents[mostCommentedComponentIndex]);
 
-        this._filmExtraComponents = [].concat(
-            this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
-            this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
-        );
-      }
+            this._filmExtraComponents = [].concat(
+                this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
+                this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
+            );
+          }
 
-      this._updateAllControllers(oldData, newData);
-      this._renderExtraCategory(Category.MOST_COMMENTED);
-    }
+          this._updateAllControllers(oldData, newData);
+          this._renderExtraCategory(Category.MOST_COMMENTED);
+        }
+      });
   }
 
   _callControllers(cb) {
