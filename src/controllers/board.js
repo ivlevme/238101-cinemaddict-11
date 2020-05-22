@@ -21,11 +21,13 @@ const ControllerType = {
 
 
 export default class BoardController {
-  constructor(container, filmsModel, commentsModel) {
+  constructor(container, filmsModel, commentsModel, api) {
     this._container = container;
 
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
+
+    this._api = api;
 
     this._containerElement = this._container.getElement();
     this._buttonContainer = this._containerElement.querySelector(`.films-list`);
@@ -85,26 +87,29 @@ export default class BoardController {
   }
 
   _onDataChange(oldData, newData) {
-    const isSuccess = this._filmsModel.updateFilm(oldData.id, newData);
+    this._api.updateFilm(oldData.id, newData)
+      .then((filmModel) => {
+        const isSuccess = this._filmsModel.updateFilm(oldData.id, filmModel);
 
-    if (isSuccess) {
-      this._removeFilms(ControllerType.MOST_COMMENTED);
+        if (isSuccess) {
+          this._removeFilms(ControllerType.MOST_COMMENTED);
 
-      const mostCommentedComponentIndex = this._filmExtraComponents
-      .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
+          const mostCommentedComponentIndex = this._filmExtraComponents
+          .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
 
-      if (mostCommentedComponentIndex !== -1) {
-        remove(this._filmExtraComponents[mostCommentedComponentIndex]);
+          if (mostCommentedComponentIndex !== -1) {
+            remove(this._filmExtraComponents[mostCommentedComponentIndex]);
 
-        this._filmExtraComponents = [].concat(
-            this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
-            this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
-        );
-      }
+            this._filmExtraComponents = [].concat(
+                this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
+                this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
+            );
+          }
 
-      this._updateAllControllers(oldData, newData);
-      this._renderExtraCategory(Category.MOST_COMMENTED);
-    }
+          this._updateAllControllers(oldData, newData);
+          this._renderExtraCategory(Category.MOST_COMMENTED);
+        }
+      });
   }
 
   _callControllers(cb) {
@@ -147,7 +152,7 @@ export default class BoardController {
         .querySelector(`.films-list__container`);
 
       const newFilms = renderFilms(showingFilms, filmExtraContainer, this._commentsModel, this._onDataChange,
-          this._onViewChange);
+          this._onViewChange, this._api);
 
       this._showedFilmControllers[category] = this._showedFilmControllers[category].concat(newFilms);
 
@@ -183,7 +188,7 @@ export default class BoardController {
 
   _updateMainBoard(films) {
     const newFilms = renderFilms(films, this._filmsListContainer, this._commentsModel, this._onDataChange,
-        this._onViewChange);
+        this._onViewChange, this._api);
 
     this._showedFilmControllers.main = this._showedFilmControllers.main.concat(newFilms);
   }

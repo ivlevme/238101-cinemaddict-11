@@ -1,28 +1,18 @@
-import {generateFilms} from "./mock/film.js";
-import {generateComments} from "./mock/comment.js";
+import API from "./api.js";
 
 import PageController from "./controllers/page.js";
 
-import FilmsModel from "./models/films.js";
-import CommentsModel from "./models/comments.js";
+
+const AUTHORIZATION = `Basic lfkds7`;
+const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
 
 
-const FILMS_COUNT = 5;
-const COMMENTS_COUNT = 20;
-
-const comments = generateComments(COMMENTS_COUNT);
-const films = generateFilms(FILMS_COUNT, comments);
+const api = new API(END_POINT, AUTHORIZATION);
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 const siteFooterElement = document.querySelector(`.footer`);
 
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
 
-const commentsModel = new CommentsModel();
-commentsModel.setComments(comments);
-
-const pageController = new PageController(siteHeaderElement, siteMainElement, siteFooterElement,
-    filmsModel, commentsModel);
+const pageController = new PageController(siteHeaderElement, siteMainElement, siteFooterElement, api);
 pageController.render();

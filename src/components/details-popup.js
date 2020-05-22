@@ -1,9 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {Comment} from '../const.js';
-import {formatRuntime} from '../utils/common.js';
+import {Comment} from "../const.js";
+import {formatRuntime} from "../utils/common.js";
 
-import moment from 'moment';
-import {encode} from 'he';
+import moment from "moment";
+import {encode} from "he";
 
 
 const formatReleaseDate = (date) => {
@@ -46,6 +46,16 @@ const createNewCommentButtonsMarkup = (selectedCommentEmoji) => {
   return newCommentButtons.join(`\n`);
 };
 
+const createGenrePartMarkup = (genres) => {
+  return (`
+    <tr class="film-details__row">
+      <td class="film-details__term">Genre${genres.length > 1 ? `s` : ``}</td>
+      <td class="film-details__cell">
+      ${createGenresMarkup(genres)}
+    </tr>
+  `).trim();
+};
+
 const createDetailsPopupTemplate = (film, selectedCommentEmoji, commentText) => {
   const {poster, ageLimit, name, original, rating, director, writers, actors, releaseDate, runtime,
     country, genres, description, comments, isFavorites, isWatched, isWatchlist} = film;
@@ -59,7 +69,7 @@ const createDetailsPopupTemplate = (film, selectedCommentEmoji, commentText) => 
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+              <img class="film-details__poster-img" src="./${poster}" alt="">
 
               <p class="film-details__age">${ageLimit}+</p>
             </div>
@@ -101,11 +111,7 @@ const createDetailsPopupTemplate = (film, selectedCommentEmoji, commentText) => 
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${country}</td>
                 </tr>
-                <tr class="film-details__row">
-                  <td class="film-details__term">Genre${genres.length > 1 ? `s` : ``}</td>
-                  <td class="film-details__cell">
-                  ${createGenresMarkup(genres)}
-                </tr>
+                ${genres.length > 0 ? createGenrePartMarkup(genres) : ``}
               </table>
 
               <p class="film-details__film-description">
@@ -199,7 +205,6 @@ export default class DetailsPopup extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
-
     this._displayComments();
   }
 

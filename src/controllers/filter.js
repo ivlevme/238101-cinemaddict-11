@@ -6,7 +6,7 @@ import {getFilmsByFilter} from "../utils/filter.js";
 import FilterComponent from "../components/filter.js";
 
 export default class FilterController {
-  constructor(container, filmsModel, sortController) {
+  constructor(container, filmsModel, sortController, mainNavigationComponent) {
     this._container = container;
     this._filmsModel = filmsModel;
     this._sortController = sortController;
@@ -15,6 +15,8 @@ export default class FilterController {
     this._filterComponent = null;
 
     this._menuChengeHandlers = [];
+
+    this._mainNavigationComponent = mainNavigationComponent;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -54,6 +56,8 @@ export default class FilterController {
     this._filmsModel.setSortType(Sort.TYPE.DEFAULT);
 
     this._activeFilterType = filterType;
+
+    this._mainNavigationComponent.removeActiveClassAdditional();
 
     this._callHandlers(this._menuChengeHandlers);
 

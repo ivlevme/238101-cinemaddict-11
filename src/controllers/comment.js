@@ -1,4 +1,4 @@
-import {render} from "../utils/render.js";
+import {render, remove} from "../utils/render.js";
 
 import CommentComponent from "../components/comment.js";
 
@@ -23,6 +23,10 @@ export default class CommentController {
     this._commentComponent.setDeleteButtonClickHandler(this._onDeleteButtonClick);
 
     render(this._container, this._commentComponent);
+  }
+
+  destroy() {
+    remove(this._commentComponent);
   }
 
   _onDeleteButtonClick() {
