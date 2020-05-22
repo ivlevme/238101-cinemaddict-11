@@ -21,11 +21,13 @@ const ControllerType = {
 
 
 export default class BoardController {
-  constructor(container, filmsModel, commentsModel) {
+  constructor(container, filmsModel, commentsModel, api) {
     this._container = container;
 
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
+
+    this._api = api;
 
     this._containerElement = this._container.getElement();
     this._buttonContainer = this._containerElement.querySelector(`.films-list`);
@@ -147,7 +149,7 @@ export default class BoardController {
         .querySelector(`.films-list__container`);
 
       const newFilms = renderFilms(showingFilms, filmExtraContainer, this._commentsModel, this._onDataChange,
-          this._onViewChange);
+          this._onViewChange, this._api);
 
       this._showedFilmControllers[category] = this._showedFilmControllers[category].concat(newFilms);
 
@@ -183,7 +185,7 @@ export default class BoardController {
 
   _updateMainBoard(films) {
     const newFilms = renderFilms(films, this._filmsListContainer, this._commentsModel, this._onDataChange,
-        this._onViewChange);
+        this._onViewChange, this._api);
 
     this._showedFilmControllers.main = this._showedFilmControllers.main.concat(newFilms);
   }

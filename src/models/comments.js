@@ -1,46 +1,50 @@
 export default class Comments {
   constructor() {
-    this._comments = [];
+    this._comments = {};
 
     this._dataChangeHandlers = [];
   }
 
-  getComments(commentIds) {
+  getComments(commentIds, filmId) {
     const comments = [];
 
+    if (!this._comments[filmId]) {
+      return comments;
+    }
+
     commentIds.forEach((commentId) => {
-      const index = this._comments.findIndex((comment) => comment.id === commentId);
+      const index = this._comments[filmId].findIndex((comment) => comment.id === commentId);
 
       if (index !== -1) {
-        comments.push(this._comments[index]);
+        comments.push(this._comments[filmId][index]);
       }
     });
 
     return comments;
   }
 
-  setComments(comments) {
-    this._comments = Array.from(comments);
+  setComments(comments, filmId) {
+    this._comments[filmId] = Array.from(comments);
 
     this._callHandlers(this._dataChangeHandlers);
   }
 
-  addComment(comment) {
-    this._comments = [].concat(this._comments, comment);
+  addComment(comment, filmId) {
+    this._comments[filmId] = [].concat(this._comments[filmId], comment);
 
     this._callHandlers(this._dataChangeHandlers);
 
     return true;
   }
 
-  removeComment(id) {
-    const index = this._comments.findIndex((comment) => comment.id === id);
+  removeComment(id, filmId) {
+    const index = this._comments[filmId].findIndex((comment) => comment.id === id);
 
     if (index === -1) {
       return false;
     }
 
-    this._comments = [].concat(this._comments.slice(0, index), this._comments.slice(index + 1));
+    this._comments[filmId] = [].concat(this._comments[filmId].slice(0, index), this._comments[filmId].slice(index + 1));
 
     this._callHandlers(this._dataChangeHandlers);
 

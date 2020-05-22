@@ -2,25 +2,32 @@ import {render, replace, remove} from "../utils/render.js";
 
 import DetailsPopupComponent from "../components/details-popup";
 import FilmCardComponent from "../components/film-card.js";
+import CommentsErrorComponent from "../components/comments-error.js";
+import CommentsLoadingComponent from "../components/comments-loading.js";
 
 import CommentController from "./comment.js";
 
 export default class FilmController {
-  constructor(container, commentsModel, onDataChange, onViewChange) {
+  constructor(container, commentsModel, onDataChange, onViewChange, api) {
     this._container = container;
 
     this._film = null;
-    this._comments = null;
 
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
 
+    this._api = api;
+
     this._detailsPopupComponent = null;
     this._filmCardComponent = null;
+    this._commentsContainer = null;
 
     this._commentControllers = [];
 
     this._commentsModel = commentsModel;
+
+    this._commentsErrorComponent = new CommentsErrorComponent();
+    this._commentsLoadingComponent = new CommentsLoadingComponent();
 
     this._displayComments = this._displayComments.bind(this);
 
@@ -42,16 +49,13 @@ export default class FilmController {
 
   render(film) {
     this._film = film;
-    this._comments = this._commentsModel.getComments(film.comments);
-
 
     const oldDetailsPopupComponent = this._detailsPopupComponent;
     const oldFilmCardComponent = this._filmCardComponent;
 
-    this._renderDetailsPopupComponent();
-
     this._filmCardComponent = new FilmCardComponent(film);
     this._setFilmCardListeners();
+    this._renderDetailsPopupComponent();
 
     if (oldDetailsPopupComponent && oldFilmCardComponent) {
       replace(this._filmCardComponent, oldFilmCardComponent);
@@ -64,15 +68,25 @@ export default class FilmController {
 
   _renderDetailsPopupComponent() {
     this._detailsPopupComponent = new DetailsPopupComponent(this._film, this._displayComments);
+
     this._displayComments();
     this._setDetailsPopupListeners();
   }
 
   _displayComments() {
-    const commentsContainer = this._detailsPopupComponent.getElement()
+    this._commentControllers.forEach((commentController) => commentController.destroy());
+
+    this._commentsContainer = this._detailsPopupComponent.getElement()
       .querySelector(`.film-details__comments-list`);
 
-    const comments = this._renderComments(commentsContainer);
+    const comments = this._renderComments(this._commentsContainer);
+
+    if (!comments.length > 0 && this._film.comments.length > 0) {
+      render(this._commentsContainer, this._commentsLoadingComponent);
+      return;
+    }
+
+    remove(this._commentsLoadingComponent);
 
     this._commentControllers = [];
     this._commentControllers = this._commentControllers.concat(comments);
@@ -94,7 +108,7 @@ export default class FilmController {
   }
 
   _renderComments(container) {
-    return Array.from(this._comments)
+    return Array.from(this._commentsModel.getComments(this._film.comments, this._film.id))
     .map((comment) => {
       const commentController = new CommentController(container, this._onCommentDataChange);
       commentController.render(comment);
@@ -104,7 +118,7 @@ export default class FilmController {
   }
 
   _addComment(newData) {
-    const isSuccess = this._commentsModel.addComment(newData);
+    const isSuccess = this._commentsModel.addComment(newData, this._film.id);
 
     if (isSuccess) {
       const indexId = newData.id;
@@ -118,7 +132,7 @@ export default class FilmController {
   }
 
   _removeComment(oldData) {
-    const isSuccess = this._commentsModel.removeComment(oldData.id);
+    const isSuccess = this._commentsModel.removeComment(oldData.id, this._film.id);
 
     if (isSuccess) {
       const indexId = this._film.comments.findIndex((commentId) => commentId === oldData.id);
@@ -152,6 +166,16 @@ export default class FilmController {
   }
 
   _addDetailsPopup() {
+    this._api.getComments(this._film.id)
+      .then((comments) => {
+        this._commentsModel.setComments(comments, this._film.id);
+        this._displayComments();
+      })
+      .catch(() => {
+        remove(this._commentsLoadingComponent);
+        render(this._commentsContainer, this._commentsErrorComponent);
+      });
+
     this._onViewChange();
 
     render(document.body, this._detailsPopupComponent);
@@ -197,8 +221,21 @@ export default class FilmController {
 
     if (isCtrlEnterKeyPress) {
       const newComment = this._detailsPopupComponent.getNewComment();
-      this._addComment(newComment);
+      if (this._checkFields(newComment)) {
+        this._addComment(newComment);
+        return;
+      }
+
+      // TODO: Добавить эффект shake
     }
+  }
+
+  _checkFields(comment) {
+    if (comment.text !== `` && comment.emoji !== null) {
+      return true;
+    }
+
+    return false;
   }
 
   _setFilmCardListeners() {

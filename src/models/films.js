@@ -1,6 +1,6 @@
-import {Sort, FilterType} from "../const.js";
+import {Sort, FilterType, FilterDate} from "../const.js";
 
-import {getFilmsByFilter, getFilmsByCategory} from "../utils/filter.js";
+import {getFilmsByFilter, getFilmsByCategory, getStatisticsByFilterDate} from "../utils/filter.js";
 import {getFilmsBySort} from "../utils/sort.js";
 
 
@@ -9,14 +9,20 @@ export default class Films {
     this._films = [];
     this._activeFilterType = FilterType.ALL;
     this._activeSortType = Sort.TYPE.DEFAULT;
+    this._statisticsFilter = FilterDate.ALL_TIME;
 
     this._dataChangeHandlers = [];
     this._filterChangeHandlers = [];
     this._sortChangeHandlers = [];
+    this._statisticsFilterChangeHandlers = [];
   }
 
   getExtraFilms(category) {
     return getFilmsByCategory(this._films, category);
+  }
+
+  getStatistics() {
+    return getStatisticsByFilterDate(this._films, this._statisticsFilter);
   }
 
   getFilms() {
@@ -45,12 +51,21 @@ export default class Films {
     this._callHandlers(this._sortChangeHandlers);
   }
 
+  setStatisticsFilter(statisticsFilter) {
+    this._statisticsFilter = statisticsFilter;
+    this._callHandlers(this._statisticsFilterChangeHandlers);
+  }
+
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }
 
   setSortChangeHandler(handler) {
     this._sortChangeHandlers.push(handler);
+  }
+
+  setStatisticsFilterChangeHandler(handler) {
+    this._statisticsFilterChangeHandlers.push(handler);
   }
 
   updateFilm(id, film) {

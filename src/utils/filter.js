@@ -1,4 +1,7 @@
-import {FilterType, Category} from "../const.js";
+import {FilterType, Category, FilterDate} from "../const.js";
+
+
+import moment from "moment";
 
 
 const MIN_RATING = 0;
@@ -39,5 +42,54 @@ const getFilmsByCategory = (films, category) => {
   return false;
 };
 
+const getFilmsByFilterDate = (films, filterDate) => {
+  const today = new Date();
 
-export {getFilmsByFilter, getFilmsByCategory};
+  switch (filterDate) {
+    case FilterDate.ALL_TIME:
+      return films;
+
+    case FilterDate.TODAY:
+      const yesterday = moment().subtract(1, `d`).toDate();
+      return films.filter((film) => film.watchingDate <= today && film.watchingDate >= yesterday);
+
+    case FilterDate.WEEK:
+      const weekAgo = moment().subtract(7, `d`).toDate();
+      return films.filter((film) => film.watchingDate <= today && film.watchingDate >= weekAgo);
+
+    case FilterDate.MONTH:
+      const monthAgo = moment().subtract(1, `M`).toDate();
+      return films.filter((film) => film.watchingDate <= today && film.watchingDate >= monthAgo);
+
+    case FilterDate.YEAR:
+      const yearAgo = moment().subtract(1, `y`).toDate();
+      return films.filter((film) => film.watchingDate <= today && film.watchingDate >= yearAgo);
+  }
+
+  return films;
+};
+
+const getStatisticsByFilterDate = (films, activeFilterDate) => {
+  const watchedFilms = films.filter((film) => film.isWatched);
+  const filmsByFilterDate = getFilmsByFilterDate(watchedFilms, activeFilterDate);
+
+  const statistic = {
+    countWatchedFilms: filmsByFilterDate.length,
+    totalDuration: 0,
+    genres: {},
+    activeFilter: activeFilterDate,
+  };
+
+  filmsByFilterDate.forEach((film) => {
+    statistic.totalDuration += film.runtime;
+
+    film.genres.forEach((genre) => {
+      statistic.genres[genre] = statistic.genres[genre] ? statistic.genres[genre] + 1 : 1;
+    });
+  });
+
+  return statistic;
+};
+
+
+export {getFilmsByFilter, getFilmsByCategory, getStatisticsByFilterDate};

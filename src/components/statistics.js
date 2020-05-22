@@ -1,8 +1,8 @@
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 import {countHoursFromMinuties, countRemainsMinutesFromHours} from "../utils/common.js";
 
-import {IndexMap} from "../const.js";
+import {IndexMap, FilterDate} from "../const.js";
 
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -10,13 +10,41 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const INDEX_FIRST_ELEMENT_IN_ARRAY = 0;
 
-// TODO: после подлючения сервера - сделать фильтрацию по датам
-const createStatisticsTemplate = (countWatchedFilms, totalDuration, topGenre) => {
+const FilterDateText = {
+  [FilterDate.ALL_TIME]: `All time`,
+  [FilterDate.TODAY]: `Today`,
+  [FilterDate.WEEK]: `Week`,
+  [FilterDate.MONTH]: `Month`,
+  [FilterDate.YEAR]: `Year`,
+};
+
+
+const filterDates = Object.values(FilterDate);
+
+const createStatisticsMenuItemMarkup = (menuItem, isChecked) => {
+  return (`
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter"
+      id="statistic-${menuItem}" value="${menuItem}" ${isChecked ? `checked` : ``}>
+    <label for="statistic-${menuItem}" class="statistic__filters-label">${FilterDateText[menuItem]}</label>
+  `).trim();
+};
+
+const createStatisticsMenuMarkup = (activeFilter) => {
+  return Array.from(filterDates)
+    .map((filterDate) => {
+      const isChecked = filterDate === activeFilter;
+      return createStatisticsMenuItemMarkup(filterDate, isChecked);
+    })
+    .join(`\n`);
+};
+
+const createStatisticsTemplate = (statistic, topGenre) => {
+  const {countWatchedFilms, totalDuration, activeFilter} = statistic;
   const durationHours = countHoursFromMinuties(totalDuration);
   const remainsDurationMinutes = countRemainsMinutesFromHours(totalDuration, durationHours);
 
   return (`
-    <section class="statistic">
+    <section class="statistic visually-hidden">
       <p class="statistic__rank">
         Your rank
         <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
@@ -25,21 +53,7 @@ const createStatisticsTemplate = (countWatchedFilms, totalDuration, topGenre) =>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
         <p class="statistic__filters-description">Show stats:</p>
-
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
-        <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
-        <label for="statistic-today" class="statistic__filters-label">Today</label>
-
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
-        <label for="statistic-week" class="statistic__filters-label">Week</label>
-
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
-        <label for="statistic-month" class="statistic__filters-label">Month</label>
-
-        <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
-        <label for="statistic-year" class="statistic__filters-label">Year</label>
+        ${createStatisticsMenuMarkup(activeFilter)}
       </form>
 
       <ul class="statistic__text-list">
@@ -65,71 +79,38 @@ const createStatisticsTemplate = (countWatchedFilms, totalDuration, topGenre) =>
   `).trim();
 };
 
-const getAllStatistics = (films) => {
-  const watchedFilms = films.filter((film) => film.isWatched);
+const getSortedGenres = (genres) => {
+  const topGenres = Object.entries(genres);
+  const sortedTopGenres = topGenres.slice().sort((a, b) => b[IndexMap.VALUE] - a[IndexMap.VALUE]);
 
-  const statistic = {
-    watchedFilms: 0,
-    totalDuration: 0,
-    topGenres: {},
-  };
+  return sortedTopGenres;
+};
 
-  watchedFilms.forEach((film) => {
-    statistic.watchedFilms = film.isWatched ? statistic.watchedFilms + 1 : statistic.watchedFilms;
-    statistic.totalDuration += film.runtime;
-    film.genres.forEach((genre) => {
-      statistic.topGenres[genre] = statistic.topGenres[genre] ? statistic.topGenres[genre] + 1 : 1;
-    });
-  });
+const getTopGenre = (sortedGenres) => {
+  if (sortedGenres.length) {
+    const topGenre = sortedGenres[INDEX_FIRST_ELEMENT_IN_ARRAY][IndexMap.KEY];
+    return topGenre;
+  }
 
-  return statistic;
+  return ``;
 };
 
 
-export default class Statistics extends AbstractSmartComponent {
-  constructor(filmsModel) {
+export default class Statistics extends AbstractComponent {
+  constructor(statistics) {
     super();
 
-    this._filmsModel = filmsModel;
+    this._statistics = statistics;
 
-    this._allStatictics = null;
-    this._countWatchedFilms = null;
-    this._totalDuration = null;
-    this._sortedTopGenres = null;
-    this._topGenre = null;
-
-    this._setStatisticsData();
+    this._sortedTopGenres = getSortedGenres(this._statistics.genres);
+    this._topGenre = getTopGenre(this._sortedTopGenres);
 
     this.renderChart();
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._countWatchedFilms, this._totalDuration, this._topGenre);
+    return createStatisticsTemplate(this._statistics, this._topGenre);
   }
-
-  _setStatisticsData() {
-    this._allStatictics = getAllStatistics(this._filmsModel.getFilmsAll());
-
-    this._countWatchedFilms = this._allStatictics.watchedFilms;
-    this._totalDuration = this._allStatictics.totalDuration;
-    this._sortedTopGenres = this._getSortedGenres();
-
-    if (this._sortedTopGenres.length) {
-      this._topGenre = this._sortedTopGenres[INDEX_FIRST_ELEMENT_IN_ARRAY][IndexMap.KEY];
-      return;
-    }
-
-    this._topGenre = ``;
-  }
-
-  _getSortedGenres() {
-    const topGenres = Object.entries(this._allStatictics.topGenres);
-    const sortedTopGenres = topGenres.slice().sort((a, b) => b[IndexMap.VALUE] - a[IndexMap.VALUE]);
-
-    return sortedTopGenres;
-  }
-
-  recoveryListeners() {}
 
   renderChart() {
     const topGenresLabels = this._sortedTopGenres.map((topGenre) => topGenre[IndexMap.KEY]);
@@ -200,17 +181,15 @@ export default class Statistics extends AbstractSmartComponent {
     return myChart;
   }
 
-  rerender() {
-    this._setStatisticsData();
+  setStatisticsFilterChangeHandler(handler) {
+    this.getElement().querySelector(`.statistic__filters`).addEventListener(`click`, (evt) => {
+      if (evt.target.tagName !== `INPUT`) {
+        return;
+      }
 
-    super.rerender();
+      handler(evt.target.value);
+    });
 
-    this.renderChart();
-  }
-
-  show() {
-    super.show();
-
-    this.rerender();
+    this._filterDateClickHandler = handler;
   }
 }
