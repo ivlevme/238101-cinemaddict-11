@@ -27,6 +27,8 @@ export default class Comments {
     this._comments[filmId] = Array.from(comments);
 
     this._callHandlers(this._dataChangeHandlers);
+
+    return true;
   }
 
   addComment(comment, filmId) {

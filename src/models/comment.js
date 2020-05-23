@@ -1,11 +1,17 @@
 export default class Comment {
   constructor(data) {
+    this.id = data[`id`];
+    this.emoji = data[`emotion`];
+    this.text = data[`comment`];
+    this.author = data[`author`];
+    this.date = new Date(data[`date`]);
+  }
+
+  toRAW() {
     return {
-      id: data[`id`],
-      emoji: data[`emotion`],
-      text: data[`comment`],
-      author: data[`author`],
-      date: new Date(data[`date`]),
+      "comment": this.text,
+      "date": this.date.toISOString(),
+      "emotion": this.emoji,
     };
   }
 

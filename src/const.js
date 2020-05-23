@@ -1,6 +1,8 @@
 const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const FilterType = {
   ALL: `all`,
   WATCHLIST: `watchlist`,
@@ -66,5 +68,21 @@ const User = {
 };
 
 
+const DeleteButtonText = {
+  DEFAULT: `Delete`,
+  DELETING: `Deleting`
+};
+
+const ElementStatus = {
+  DISABLE: true,
+  ENABLE: false,
+};
+
+const Color = {
+  RED: `#FF0000`,
+  NONE: ``,
+};
+
+
 export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FilterType, FILTER_CATEGORIES, IndexMap,
-  FILMS_EMPTY, FilterDate, User};
+  FILMS_EMPTY, FilterDate, User, SHAKE_ANIMATION_TIMEOUT, DeleteButtonText, ElementStatus, Color};
