@@ -1,4 +1,5 @@
 import {Film, Category} from "../const.js";
+import {shake} from "../utils/common.js";
 import {render, remove} from "../utils/render.js";
 
 import ShowMoreButtonComponent from "../components/show-more-button.js";
@@ -89,7 +90,7 @@ export default class BoardController {
   _onDataChange(oldData, newData) {
     this._api.updateFilm(oldData.id, newData)
       .then((filmModel) => {
-        const isSuccess = this._filmsModel.updateFilm(oldData.id, filmModel);
+        const isSuccess = this._filmsModel.updateFilm(filmModel, oldData.id);
 
         if (isSuccess) {
           this._removeFilms(ControllerType.MOST_COMMENTED);
@@ -109,6 +110,14 @@ export default class BoardController {
           this._updateAllControllers(oldData, newData);
           this._renderExtraCategory(Category.MOST_COMMENTED);
         }
+      })
+      .catch(() => {
+        this._callControllers((filmController) => {
+          if (filmController.getFilm().id === oldData.id) {
+            shake(filmController.getDetailsPopupComponent());
+            shake(filmController.getFilmCardComponent());
+          }
+        });
       });
   }
 
@@ -151,8 +160,8 @@ export default class BoardController {
       const filmExtraContainer = filmExtraComponent.getElement()
         .querySelector(`.films-list__container`);
 
-      const newFilms = renderFilms(showingFilms, filmExtraContainer, this._commentsModel, this._onDataChange,
-          this._onViewChange, this._api);
+      const newFilms = renderFilms(showingFilms, filmExtraContainer, this._filmsModel, this._commentsModel,
+          this._onDataChange, this._onViewChange, this._api);
 
       this._showedFilmControllers[category] = this._showedFilmControllers[category].concat(newFilms);
 
@@ -187,8 +196,8 @@ export default class BoardController {
   }
 
   _updateMainBoard(films) {
-    const newFilms = renderFilms(films, this._filmsListContainer, this._commentsModel, this._onDataChange,
-        this._onViewChange, this._api);
+    const newFilms = renderFilms(films, this._filmsListContainer, this._filmsModel, this._commentsModel,
+        this._onDataChange, this._onViewChange, this._api);
 
     this._showedFilmControllers.main = this._showedFilmControllers.main.concat(newFilms);
   }

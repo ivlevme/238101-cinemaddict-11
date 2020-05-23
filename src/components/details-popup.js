@@ -264,9 +264,9 @@ export default class DetailsPopup extends AbstractSmartComponent {
   getNewComment() {
     return {
       id: String(new Date() + Math.random()),
-      emoji: this._selectedCommentEmoji,
-      text: this._commentText,
       author: `Author new comment`,
+      comment: this._commentText,
+      emotion: this._selectedCommentEmoji,
       date: new Date(),
     };
   }
@@ -281,5 +281,32 @@ export default class DetailsPopup extends AbstractSmartComponent {
   resetNewComment() {
     this._selectedCommentEmoji = null;
     this._commentText = ``;
+  }
+
+  addNewCommentBorderColor(color) {
+    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
+    const selectedEmoji = this.getElement().querySelector(`.film-details__add-emoji-label`);
+
+    textarea.style.borderColor = color;
+    selectedEmoji.style.borderColor = color;
+  }
+
+  disableForm(status) {
+    const controlInputs = this.getElement().querySelectorAll(`.film-details__control-input`);
+    const commentDeleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    const emojis = this.getElement().querySelectorAll(`.film-details__emoji-item`);
+    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
+
+    this._callDisable(controlInputs, status);
+    this._callDisable(commentDeleteButtons, status);
+    this._callDisable(emojis, status);
+
+    textarea.disabled = status;
+  }
+
+  _callDisable(elements, status) {
+    elements.forEach((element) => {
+      element.disabled = status;
+    });
   }
 }

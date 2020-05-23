@@ -1,8 +1,9 @@
 import AbstractComponent from "./abstract-component.js";
+
 import {formatCommentDate} from '../utils/common.js';
 
 
-const createCommentTemplate = (comment) => {
+const createCommentTemplate = (comment, buttonText) => {
   const {emoji, text, author, date} = comment;
 
   return (`
@@ -15,7 +16,7 @@ const createCommentTemplate = (comment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${formatCommentDate(date)}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button class="film-details__comment-delete">${buttonText}</button>
         </p>
       </div>
     </li>
@@ -23,14 +24,15 @@ const createCommentTemplate = (comment) => {
 };
 
 export default class Comment extends AbstractComponent {
-  constructor(comment) {
+  constructor(comment, deleteButtonText) {
     super();
 
     this._comment = comment;
+    this._buttonText = deleteButtonText;
   }
 
   getTemplate() {
-    return createCommentTemplate(this._comment);
+    return createCommentTemplate(this._comment, this._buttonText);
   }
 
   setDeleteButtonClickHandler(handler) {

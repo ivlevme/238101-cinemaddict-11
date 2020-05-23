@@ -68,7 +68,7 @@ export default class Films {
     this._statisticsFilterChangeHandlers.push(handler);
   }
 
-  updateFilm(id, film) {
+  updateFilm(film, id) {
     const index = this._films.findIndex((it) => it.id === id);
 
     if (index === -1) {

@@ -1,3 +1,5 @@
+import {SHAKE_ANIMATION_TIMEOUT} from "../const.js";
+
 import moment from "moment";
 
 
@@ -57,6 +59,14 @@ const formatCommentDate = (date) => {
   return moment(date).fromNow();
 };
 
+const shake = (component) => {
+  component.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+  setTimeout(() => {
+    component.style.animation = ``;
+  }, SHAKE_ANIMATION_TIMEOUT);
+};
+
 
 export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, formatRuntime, getRandomDate,
-  formatCommentDate, countHoursFromMinuties, countRemainsMinutesFromHours};
+  formatCommentDate, countHoursFromMinuties, countRemainsMinutesFromHours, shake};

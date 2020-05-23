@@ -1,4 +1,7 @@
+import {DeleteButtonText, ElementStatus, Color} from "../const.js";
+
 import {render, replace, remove} from "../utils/render.js";
+import {shake} from "../utils/common.js";
 
 import DetailsPopupComponent from "../components/details-popup";
 import FilmCardComponent from "../components/film-card.js";
@@ -8,9 +11,11 @@ import CommentsLoadingComponent from "../components/comments-loading.js";
 import CommentController from "./comment.js";
 
 import FilmModel from "../models/film.js";
+import CommentModel from "../models/comment.js";
+
 
 export default class FilmController {
-  constructor(container, commentsModel, onDataChange, onViewChange, api) {
+  constructor(container, filmsModel, commentsModel, onDataChange, onViewChange, api) {
     this._container = container;
 
     this._film = null;
@@ -26,6 +31,7 @@ export default class FilmController {
 
     this._commentControllers = [];
 
+    this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
 
     this._commentsErrorComponent = new CommentsErrorComponent();
@@ -112,42 +118,68 @@ export default class FilmController {
   _renderComments(container) {
     return Array.from(this._commentsModel.getComments(this._film.comments, this._film.id))
     .map((comment) => {
-      const commentController = new CommentController(container, this._onCommentDataChange);
-      commentController.render(comment);
+      const commentController = new CommentController(container, comment, this._onCommentDataChange);
+      commentController.render();
 
       return commentController;
     });
   }
 
   _addComment(newData) {
-    const isSuccess = this._commentsModel.addComment(newData, this._film.id);
+    const newComment = CommentModel.parseComment(newData);
 
-    if (isSuccess) {
-      const indexId = newData.id;
+    this._api.createComment(newComment, this._film.id)
+      .then((models) => {
+        const {filmModel, commentModel} = models;
 
-      const newFilm = Object.assign({}, this._film);
+        const isSuccessAddComment = this._commentsModel.setComments(commentModel, this._film.id);
+        const isSuccessAddFilm = this._filmsModel.updateFilm(filmModel, this._film.id);
 
-      newFilm.comments = [].concat(newFilm.comments, indexId);
+        if (isSuccessAddFilm && isSuccessAddComment) {
+          this._onDataChange(this._film, filmModel);
 
-      this._onDataChange(this._film, newFilm);
-    }
+          this._enableForm();
+          return;
+        }
+
+        throw new Error();
+      })
+      .catch(() => {
+        this._enableForm();
+        this._detailsPopupComponent.addNewCommentBorderColor(Color.RED);
+        shake(this._detailsPopupComponent.getElement().querySelector(`.film-details__new-comment`));
+      });
   }
 
   _removeComment(oldData) {
-    const isSuccess = this._commentsModel.removeComment(oldData.id, this._film.id);
+    this._api.removeComment(oldData.id)
+      .then(() => {
+        const isSuccess = this._commentsModel.removeComment(oldData.id, this._film.id);
 
-    if (isSuccess) {
-      const indexId = this._film.comments.findIndex((commentId) => commentId === oldData.id);
+        if (isSuccess) {
+          const indexId = this._film.comments.findIndex((commentId) => commentId === oldData.id);
 
-      if (indexId === -1) {
-        return;
-      }
+          if (indexId === -1) {
+            return;
+          }
 
-      const newFilm = Object.assign({}, this._film);
-      newFilm.comments = [].concat(newFilm.comments.slice(0, indexId), newFilm.comments.slice(indexId + 1));
+          const newFilm = FilmModel.clone(this._film);
+          newFilm.comments = [].concat(newFilm.comments.slice(0, indexId), newFilm.comments.slice(indexId + 1));
 
-      this._onDataChange(this._film, newFilm);
-    }
+          this._onDataChange(this._film, newFilm);
+        }
+      })
+      .catch(() => {
+        this._commentControllers.forEach((commentController) => {
+          if (commentController.getComment().id === oldData.id) {
+            commentController.setDeleteButtonText(DeleteButtonText.DEFAULT);
+            commentController.render();
+            commentController.disableDeleteButton(ElementStatus.ENABLE);
+
+            shake(commentController.getElement());
+          }
+        });
+      });
   }
 
   _onCommentDataChange(oldData, newData) {
@@ -223,21 +255,24 @@ export default class FilmController {
   }
 
   _onSubmit(evt) {
-    const isCtrlEnterKeyPress = evt.ctrlKey && evt.key === `Enter`;
+    const isCtrlEnterKeyPress = (evt.ctrlKey || evt.metaKey) && evt.key === `Enter`;
 
     if (isCtrlEnterKeyPress) {
       const newComment = this._detailsPopupComponent.getNewComment();
       if (this._checkFields(newComment)) {
+        this._detailsPopupComponent.addNewCommentBorderColor(Color.NONE);
+        this._disableForm();
         this._addComment(newComment);
         return;
       }
 
-      // TODO: Добавить эффект shake
+      this._detailsPopupComponent.addNewCommentBorderColor(Color.RED);
+      shake(this._detailsPopupComponent.getElement().querySelector(`.film-details__new-comment`));
     }
   }
 
   _checkFields(comment) {
-    if (comment.text !== `` && comment.emoji !== null) {
+    if (comment.comment !== `` && comment.emotion !== null) {
       return true;
     }
 
@@ -260,5 +295,23 @@ export default class FilmController {
     this._detailsPopupComponent.setWatchlistButtonClickHandler(this._onWatchlistButtonClick);
     this._detailsPopupComponent.setWatchedButtonClickHandler(this._onWatchedButtonClick);
     this._detailsPopupComponent.setFavoriteButtonClickHandler(this._onFavoriteButtonClick);
+  }
+
+  getDetailsPopupComponent() {
+    return this._detailsPopupComponent.getElement();
+  }
+
+  getFilmCardComponent() {
+    return this._filmCardComponent.getElement();
+  }
+
+  _enableForm() {
+    this._detailsPopupComponent.disableForm(ElementStatus.ENABLE);
+    document.addEventListener(`keydown`, this._onSubmit);
+  }
+
+  _disableForm() {
+    this._detailsPopupComponent.disableForm(ElementStatus.DISABLE);
+    document.removeEventListener(`keydown`, this._onSubmit);
   }
 }

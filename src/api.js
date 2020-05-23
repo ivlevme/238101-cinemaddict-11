@@ -26,11 +26,13 @@ export default class API {
 
   getFilms() {
     return this._load({url: `movies`})
+    .then((response) => response.json())
     .then(FilmModel.parseFilms);
   }
 
   getComments(id) {
     return this._load({url: `comments/${id}`})
+    .then((response) => response.json())
     .then(CommentModel.parseComments);
   }
 
@@ -41,17 +43,37 @@ export default class API {
       body: JSON.stringify(data.toRAW()),
       headers: new Headers({"Content-Type": `application/json`}),
     })
+      .then((response) => response.json())
       .then(FilmModel.parseFilm);
+  }
+
+  createComment(comment, filmId) {
+    return this._load({
+      url: `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(comment.toRAW()),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        const commentModel = CommentModel.parseComments(response.comments);
+        const filmModel = FilmModel.parseFilm(response.movie);
+
+        return Promise.resolve({
+          filmModel,
+          commentModel,
+        });
+      });
+  }
+
+  removeComment(id) {
+    return this._load({url: `comments/${id}`, method: Method.DELETE});
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus)
-      .then((response) => response.json())
-      .catch((err) => {
-        throw err;
-      });
+      .then(checkStatus);
   }
 }
