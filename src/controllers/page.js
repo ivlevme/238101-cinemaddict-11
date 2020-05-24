@@ -120,4 +120,8 @@ export default class PageController {
     this._statisticsController.hide();
     this._updateProfileComponent(User.NAME);
   }
+
+  manageCommentsForm(status) {
+    this._boardController.manageCommentsForm(status);
+  }
 }

@@ -1,7 +1,7 @@
 import {DeleteButtonText, ElementStatus, Color} from "../const.js";
 
 import {render, replace, remove} from "../utils/render.js";
-import {shake} from "../utils/common.js";
+import {shake, isOnline} from "../utils/common.js";
 
 import DetailsPopupComponent from "../components/details-popup";
 import FilmCardComponent from "../components/film-card.js";
@@ -79,6 +79,12 @@ export default class FilmController {
 
     this._displayComments();
     this._setDetailsPopupListeners();
+
+    if (!isOnline()) {
+      render(this._commentsContainer, this._commentsErrorComponent);
+
+      this.disableCommentsForm();
+    }
   }
 
   _displayComments() {
@@ -89,7 +95,7 @@ export default class FilmController {
 
     const comments = this._renderComments(this._commentsContainer);
 
-    if (!comments.length > 0 && this._film.comments.length > 0) {
+    if (!comments.length > 0 && this._film.comments.length > 0 && isOnline()) {
       render(this._commentsContainer, this._commentsLoadingComponent);
       return;
     }
@@ -105,7 +111,10 @@ export default class FilmController {
   }
 
   setDefaultView() {
-    this._removeDetailsPopup();
+    this._detailsPopupComponent.getElement().remove();
+
+    document.removeEventListener(`keydown`, this._onSubmit);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   destroy() {
@@ -138,14 +147,14 @@ export default class FilmController {
         if (isSuccessAddFilm && isSuccessAddComment) {
           this._onDataChange(this._film, filmModel);
 
-          this._enableForm();
+          this.enableMainForm();
           return;
         }
 
         throw new Error();
       })
       .catch(() => {
-        this._enableForm();
+        this.enableMainForm();
         this._detailsPopupComponent.addNewCommentBorderColor(Color.RED);
         shake(this._detailsPopupComponent.getElement().querySelector(`.film-details__new-comment`));
       });
@@ -207,6 +216,9 @@ export default class FilmController {
       })
       .catch(() => {
         remove(this._commentsLoadingComponent);
+
+        this._commentControllers.forEach((commentController) => commentController.destroy());
+
         render(this._commentsContainer, this._commentsErrorComponent);
       });
 
@@ -261,7 +273,7 @@ export default class FilmController {
       const newComment = this._detailsPopupComponent.getNewComment();
       if (this._checkFields(newComment)) {
         this._detailsPopupComponent.addNewCommentBorderColor(Color.NONE);
-        this._disableForm();
+        this.disableMainForm();
         this._addComment(newComment);
         return;
       }
@@ -305,13 +317,21 @@ export default class FilmController {
     return this._filmCardComponent.getElement();
   }
 
-  _enableForm() {
-    this._detailsPopupComponent.disableForm(ElementStatus.ENABLE);
-    document.addEventListener(`keydown`, this._onSubmit);
+  enableMainForm() {
+    this._detailsPopupComponent.manageFilmControlForm(ElementStatus.ENABLE);
+    this.enableCommentsForm(ElementStatus.ENABLE);
   }
 
-  _disableForm() {
-    this._detailsPopupComponent.disableForm(ElementStatus.DISABLE);
-    document.removeEventListener(`keydown`, this._onSubmit);
+  disableMainForm() {
+    this._detailsPopupComponent.manageFilmControlForm(ElementStatus.DISABLE);
+    this.disableCommentsForm(ElementStatus.DISABLE);
+  }
+
+  enableCommentsForm() {
+    this._detailsPopupComponent.manageCommentsForm(ElementStatus.ENABLE);
+  }
+
+  disableCommentsForm() {
+    this._detailsPopupComponent.manageCommentsForm(ElementStatus.DISABLE);
   }
 }

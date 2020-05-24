@@ -291,13 +291,16 @@ export default class DetailsPopup extends AbstractSmartComponent {
     selectedEmoji.style.borderColor = color;
   }
 
-  disableForm(status) {
+  manageFilmControlForm(status) {
     const controlInputs = this.getElement().querySelectorAll(`.film-details__control-input`);
+    this._callDisable(controlInputs, status);
+  }
+
+  manageCommentsForm(status) {
     const commentDeleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
     const emojis = this.getElement().querySelectorAll(`.film-details__emoji-item`);
     const textarea = this.getElement().querySelector(`.film-details__comment-input`);
 
-    this._callDisable(controlInputs, status);
     this._callDisable(commentDeleteButtons, status);
     this._callDisable(emojis, status);
 

@@ -218,4 +218,18 @@ export default class BoardController {
   show() {
     this._container.show();
   }
+
+  manageCommentsForm(disableStatus) {
+    if (disableStatus) {
+      this._callControllers((filmController) => {
+        filmController.disableCommentsForm();
+      });
+
+      return;
+    }
+
+    this._callControllers((filmController) => {
+      filmController.enableCommentsForm();
+    });
+  }
 }
