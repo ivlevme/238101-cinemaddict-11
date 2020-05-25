@@ -1,4 +1,4 @@
-import {Sort, FilterType, FilterDate} from "../const.js";
+import {Sort, FilterType, FilterDate, UserRank, RankRatio} from "../const.js";
 
 import {getFilmsByFilter, getFilmsByCategory, getStatisticsByFilterDate} from "../utils/filter.js";
 import {getFilmsBySort} from "../utils/sort.js";
@@ -7,6 +7,8 @@ import {getFilmsBySort} from "../utils/sort.js";
 export default class Films {
   constructor() {
     this._films = [];
+
+    this._userRank = UserRank.NONE;
     this._activeFilterType = FilterType.ALL;
     this._activeSortType = Sort.TYPE.DEFAULT;
     this._statisticsFilter = FilterDate.ALL_TIME;
@@ -22,7 +24,11 @@ export default class Films {
   }
 
   getStatistics() {
-    return getStatisticsByFilterDate(this._films, this._statisticsFilter);
+    return getStatisticsByFilterDate(this._films, this._statisticsFilter, this._userRank);
+  }
+
+  getUserRank() {
+    return this._userRank;
   }
 
   getFilms() {
@@ -38,6 +44,8 @@ export default class Films {
 
   setFilms(films) {
     this._films = Array.from(films);
+    this._userRank = this._setUserRank(films);
+
     this._callHandlers(this._dataChangeHandlers);
   }
 
@@ -77,6 +85,8 @@ export default class Films {
 
     this._films = [].concat(this._films.slice(0, index), film, this._films.slice(index + 1));
 
+    this._userRank = this._setUserRank(this._films);
+
     this._callHandlers(this._dataChangeHandlers);
 
     return true;
@@ -88,5 +98,23 @@ export default class Films {
 
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
+  }
+
+  _setUserRank(films) {
+    const countWatchedFilms = films.filter((film) => film.isWatched).length;
+
+    if (countWatchedFilms > RankRatio.NONE && countWatchedFilms <= RankRatio.NOVICE) {
+      return UserRank.NOVICE;
+    }
+
+    if (countWatchedFilms > RankRatio.NOVICE && countWatchedFilms <= RankRatio.FAN) {
+      return UserRank.FAN;
+    }
+
+    if (countWatchedFilms > RankRatio.FAN) {
+      return UserRank.MOVIE_BUFF;
+    }
+
+    return UserRank.NONE;
   }
 }

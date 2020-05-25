@@ -67,6 +67,10 @@ const shake = (component) => {
   }, SHAKE_ANIMATION_TIMEOUT);
 };
 
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
 
 export {getRandomArrayItem, getRandomIntegerNumber, generateRandomArray, formatRuntime, getRandomDate,
-  formatCommentDate, countHoursFromMinuties, countRemainsMinutesFromHours, shake};
+  formatCommentDate, countHoursFromMinuties, countRemainsMinutesFromHours, shake, isOnline};

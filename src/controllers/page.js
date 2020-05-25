@@ -1,5 +1,5 @@
 import {render, replace} from "../utils/render.js";
-import {User, FilterDate} from "../const.js";
+import {FilterDate} from "../const.js";
 
 import FilmsModel from "../models/films.js";
 import CommentsModel from "../models/comments.js";
@@ -30,7 +30,7 @@ export default class PageController {
     this._filmsModel = new FilmsModel();
     this._commentsModel = new CommentsModel();
 
-    this._profileComponent = new ProfileComponent(User.NAME);
+    this._profileComponent = new ProfileComponent(this._filmsModel.getUserRank());
 
     this._mainNavigationComponent = new MainNavigationComponent();
     this._mainNavigationContainer = this._mainNavigationComponent.getElement();
@@ -41,7 +41,7 @@ export default class PageController {
     this._filmsLoadingComponent = new FilmsLoadingComponent();
     this._noFilmsComponent = new NoFilmsComponent();
 
-    this._boardController = new BoardController(this._filmsContainerComponent, this._filmsModel,
+    this._boardController = new BoardController(this._filmsContainerComponent, this, this._filmsModel,
         this._commentsModel, this._api);
     this._sortController = new SortController(this._mainConatiner, this._filmsModel);
     this._filterController = new FilterController(this._mainNavigationContainer, this._filmsModel,
@@ -59,6 +59,8 @@ export default class PageController {
     .then((films) => {
       this._filmsModel.setFilms(films);
       this._renderBoardFilms();
+
+      this.updateProfileComponent(this._filmsModel.getUserRank());
 
       const countFilms = this._filmsModel.getFilms().length;
 
@@ -91,13 +93,12 @@ export default class PageController {
 
       this._statisticsController.setStatisticsFilter(FilterDate.ALL_TIME);
       this._statisticsController.show();
-      this._updateProfileComponent(User.RANK);
     });
   }
 
-  _updateProfileComponent(user) {
+  updateProfileComponent(rank) {
     const oldProfileComponent = this._profileComponent;
-    this._profileComponent = new ProfileComponent(user);
+    this._profileComponent = new ProfileComponent(rank);
     replace(this._profileComponent, oldProfileComponent);
   }
 
@@ -118,6 +119,9 @@ export default class PageController {
     this._boardController.show();
 
     this._statisticsController.hide();
-    this._updateProfileComponent(User.NAME);
+  }
+
+  manageCommentsForm(status) {
+    this._boardController.manageCommentsForm(status);
   }
 }

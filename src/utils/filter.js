@@ -69,7 +69,7 @@ const getFilmsByFilterDate = (films, filterDate) => {
   return films;
 };
 
-const getStatisticsByFilterDate = (films, activeFilterDate) => {
+const getStatisticsByFilterDate = (films, activeFilterDate, userRank) => {
   const watchedFilms = films.filter((film) => film.isWatched);
   const filmsByFilterDate = getFilmsByFilterDate(watchedFilms, activeFilterDate);
 
@@ -78,6 +78,7 @@ const getStatisticsByFilterDate = (films, activeFilterDate) => {
     totalDuration: 0,
     genres: {},
     activeFilter: activeFilterDate,
+    userRank,
   };
 
   filmsByFilterDate.forEach((film) => {
