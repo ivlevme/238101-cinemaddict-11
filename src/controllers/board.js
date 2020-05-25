@@ -12,9 +12,12 @@ import {renderFilms} from "../utils/films.js";
 
 const FILM_INDEX_START = 0;
 
-const SHOWING_FILMS_COUNT_ON_START = 5;
-const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
-const SHOWING_EXTRA_FILMS_COUNT_ON_START = 2;
+
+const ShowingFilmsCount = {
+  BY_BUTTON: 5,
+  MAIN_ON_START: 5,
+  EXTRA_ON_START: 2,
+};
 
 const ControllerType = {
   MAIN: `main`,
@@ -48,7 +51,7 @@ export default class BoardController {
 
     this._filmControllerTypes = Object.keys(this._showedFilmControllers);
 
-    this._showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
+    this._showingFilmsCount = ShowingFilmsCount.MAIN_ON_START;
 
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
 
@@ -99,7 +102,7 @@ export default class BoardController {
   _removeMainFilms() {
     this._removeFilms(ControllerType.MAIN);
 
-    this._showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
+    this._showingFilmsCount = ShowingFilmsCount.MAIN_ON_START;
   }
 
   _updateMainFilms() {
@@ -161,7 +164,7 @@ export default class BoardController {
 
   _renderExtraCategory(category) {
     const showingFilms = this._filmsModel.getExtraFilms(category)
-          .slice(INDEX_FIRST_ELEMENT_IN_ARRAY, SHOWING_EXTRA_FILMS_COUNT_ON_START);
+          .slice(INDEX_FIRST_ELEMENT_IN_ARRAY, ShowingFilmsCount.EXTRA_ON_START);
 
     if (showingFilms.length > EMPTY_ARRAY_LENGTH) {
       const filmExtraComponent = new FilmExtraComponent(category);
@@ -192,7 +195,7 @@ export default class BoardController {
       const films = this._filmsModel.getFilms();
 
       const prevFilmsCount = this._showingFilmsCount;
-      this._showingFilmsCount = this._showingFilmsCount + SHOWING_FILMS_COUNT_BY_BUTTON;
+      this._showingFilmsCount = this._showingFilmsCount + ShowingFilmsCount.BY_BUTTON;
 
       const showingFilms = this._filmsModel.getFilms()
         .slice(prevFilmsCount, this._showingFilmsCount);
