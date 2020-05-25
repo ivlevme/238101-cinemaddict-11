@@ -1,23 +1,31 @@
 import AbstractComponent from "./abstract-component.js";
-import {formatRuntime} from '../utils/common.js';
+import {formatRuntime} from "../utils/common.js";
 
+import {INDEX_FIRST_ELEMENT_IN_ARRAY, EMPTY_ARRAY_LENGTH} from "../const.js";
+
+
+const MAX_DESCRIPTION_LENGTH = 140;
+const SINGLE_SYMBOL_LENGTH = 1;
 
 const ControlModifier = {
-  watchlist: `add-to-watchlist`,
-  watched: `mark-as-watched`,
-  favorite: `favorite`,
+  WATCHLIST: `add-to-watchlist`,
+  WATCHED: `mark-as-watched`,
+  FAVORITE: `favorite`,
 };
 
 const ControlName = {
-  watchlist: `Add to watchlist`,
-  watched: `Mark as watched`,
-  favorite: `Mark as favorite`,
+  WATCHLIST: `Add to watchlist`,
+  WATCHED: `Mark as watched`,
+  FAVORITE: `Mark as favorite`,
 };
 
 
 const formatDescription = (description) => {
-  if (description.length > 140) {
-    description = `${description.slice(0, 139)}...`;
+  if (description.length > MAX_DESCRIPTION_LENGTH) {
+    description = `${description.slice(
+        INDEX_FIRST_ELEMENT_IN_ARRAY,
+        MAX_DESCRIPTION_LENGTH - SINGLE_SYMBOL_LENGTH
+    )}...`;
     return description;
   }
 
@@ -27,9 +35,9 @@ const formatDescription = (description) => {
 const createControlsMarkup = (type, isAcitve) => {
   return (`
     <button class="film-card__controls-item button
-      film-card__controls-item--${ControlModifier[type]}
+      film-card__controls-item--${ControlModifier[type.toUpperCase()]}
       ${isAcitve ? `film-card__controls-item--active` : ``}">
-        ${ControlName[type]}
+        ${ControlName[type.toUpperCase()]}
     </button>
   `).trim();
 };
@@ -49,7 +57,7 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__info">
         <span class="film-card__year">${releaseDate.getFullYear()}</span>
         <span class="film-card__duration">${formatRuntime(runtime)}</span>
-        <span class="film-card__genre">${genres.length > 0 ? genres[genres.length - 1] : ``}</span>
+        <span class="film-card__genre">${genres.length > EMPTY_ARRAY_LENGTH ? genres[genres.length - SINGLE_SYMBOL_LENGTH] : ``}</span>
       </p>
       <img src="./${poster}" alt="${name}" class="film-card__poster">
       <p class="film-card__description">${formatDescription(description)}</p>

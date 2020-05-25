@@ -1,3 +1,5 @@
+import {INDEX_NEXT_ELEMENT_IN_ARRAY, INDEX_FIRST_ELEMENT_IN_ARRAY, INDEX_MISS_ELEMENT} from "../const";
+
 export default class Comments {
   constructor() {
     this._comments = {};
@@ -15,7 +17,7 @@ export default class Comments {
     commentIds.forEach((commentId) => {
       const index = this._comments[filmId].findIndex((comment) => comment.id === commentId);
 
-      if (index !== -1) {
+      if (index !== INDEX_MISS_ELEMENT) {
         comments.push(this._comments[filmId][index]);
       }
     });
@@ -42,11 +44,14 @@ export default class Comments {
   removeComment(id, filmId) {
     const index = this._comments[filmId].findIndex((comment) => comment.id === id);
 
-    if (index === -1) {
+    if (index === INDEX_MISS_ELEMENT) {
       return false;
     }
 
-    this._comments[filmId] = [].concat(this._comments[filmId].slice(0, index), this._comments[filmId].slice(index + 1));
+    this._comments[filmId] = [].concat(
+        this._comments[filmId].slice(INDEX_FIRST_ELEMENT_IN_ARRAY, index),
+        this._comments[filmId].slice(index + INDEX_NEXT_ELEMENT_IN_ARRAY)
+    );
 
     this._callHandlers(this._dataChangeHandlers);
 

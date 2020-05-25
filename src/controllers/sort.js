@@ -1,4 +1,4 @@
-import {Sort} from "../const.js";
+import {SortType} from "../const.js";
 import {replace, render} from "../utils/render.js";
 
 import SortComponent from "../components/sort.js";
@@ -12,7 +12,7 @@ export default class SortController {
     this._boardController = boardController;
 
     this._sortComponent = null;
-    this._activeSortType = Sort.TYPE.DEFAULT;
+    this._activeSortType = SortType.DEFAULT;
 
 
     this._onSortChange = this._onSortChange.bind(this);
@@ -43,6 +43,14 @@ export default class SortController {
     this.render();
   }
 
+  hide() {
+    this._sortComponent.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
+  }
+
   _onSortChange(activeSortType) {
     this._filmsModel.setSortType(activeSortType);
     this._activeSortType = activeSortType;
@@ -51,13 +59,5 @@ export default class SortController {
 
   _onDataChange() {
     this.render();
-  }
-
-  hide() {
-    this._sortComponent.hide();
-  }
-
-  show() {
-    this._sortComponent.show();
   }
 }

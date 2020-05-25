@@ -1,9 +1,14 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {Comment} from "../const.js";
+import {EMOJIS, EMPTY_ARRAY_LENGTH} from "../const.js";
 import {formatRuntime} from "../utils/common.js";
 
 import moment from "moment";
 import {encode} from "he";
+
+
+const COUNT_ONE_RECORD = 1;
+
+const NAME_NEW_AUTHOR = `New Author`;
 
 
 const formatReleaseDate = (date) => {
@@ -37,7 +42,7 @@ const createNewCommentMarkup = (name, selectedCommentEmoji) => {
 const createNewCommentButtonsMarkup = (selectedCommentEmoji) => {
   const newCommentButtons = [];
 
-  Comment.EMOJI.forEach((name) => {
+  EMOJIS.forEach((name) => {
     const newButtonMarkup = createNewCommentMarkup(name, selectedCommentEmoji);
 
     newCommentButtons.push(newButtonMarkup);
@@ -49,7 +54,7 @@ const createNewCommentButtonsMarkup = (selectedCommentEmoji) => {
 const createGenrePartMarkup = (genres) => {
   return (`
     <tr class="film-details__row">
-      <td class="film-details__term">Genre${genres.length > 1 ? `s` : ``}</td>
+      <td class="film-details__term">Genre${genres.length > COUNT_ONE_RECORD ? `s` : ``}</td>
       <td class="film-details__cell">
       ${createGenresMarkup(genres)}
     </tr>
@@ -92,11 +97,11 @@ const createDetailsPopupTemplate = (film, selectedCommentEmoji, commentText) => 
                   <td class="film-details__cell">${director}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Writer${writers.length > 1 ? `s` : ``}</td>
+                  <td class="film-details__term">Writer${writers.length > COUNT_ONE_RECORD ? `s` : ``}</td>
                   <td class="film-details__cell">${writers.join(`, `)}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Actor${actors.length > 1 ? `s` : ``}</td>
+                  <td class="film-details__term">Actor${actors.length > COUNT_ONE_RECORD ? `s` : ``}</td>
                   <td class="film-details__cell">${actors.join(`, `)}</td>
                 </tr>
                 <tr class="film-details__row">
@@ -111,7 +116,7 @@ const createDetailsPopupTemplate = (film, selectedCommentEmoji, commentText) => 
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${country}</td>
                 </tr>
-                ${genres.length > 0 ? createGenrePartMarkup(genres) : ``}
+                ${genres.length > EMPTY_ARRAY_LENGTH ? createGenrePartMarkup(genres) : ``}
               </table>
 
               <p class="film-details__film-description">
@@ -212,6 +217,40 @@ export default class DetailsPopup extends AbstractSmartComponent {
     return createDetailsPopupTemplate(this._film, this._selectedCommentEmoji, this._commentText);
   }
 
+  getNewComment() {
+    return {
+      id: String(Number(new Date()) + Math.random()),
+      author: NAME_NEW_AUTHOR,
+      comment: this._commentText,
+      emotion: this._selectedCommentEmoji,
+      date: new Date(),
+    };
+  }
+
+  addNewCommentBorderColor(color) {
+    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
+    const selectedEmoji = this.getElement().querySelector(`.film-details__add-emoji-label`);
+
+    textarea.style.borderColor = color;
+    selectedEmoji.style.borderColor = color;
+  }
+
+  manageFilmControlForm(status) {
+    const controlInputs = this.getElement().querySelectorAll(`.film-details__control-input`);
+    this._callDisable(controlInputs, status);
+  }
+
+  manageCommentsForm(status) {
+    const commentDeleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    const emojis = this.getElement().querySelectorAll(`.film-details__emoji-item`);
+    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
+
+    this._callDisable(commentDeleteButtons, status);
+    this._callDisable(emojis, status);
+
+    textarea.disabled = status;
+  }
+
   setClosePopupClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
@@ -261,50 +300,11 @@ export default class DetailsPopup extends AbstractSmartComponent {
       });
   }
 
-  getNewComment() {
-    return {
-      id: String(new Date() + Math.random()),
-      author: `Author new comment`,
-      comment: this._commentText,
-      emotion: this._selectedCommentEmoji,
-      date: new Date(),
-    };
-  }
-
   _setNewComment(evt) {
     this._selectedCommentEmoji = evt.target.tagName === `INPUT` ? evt.target.value : this._selectedCommentEmoji;
 
     const commentText = this.getElement().querySelector(`.film-details__comment-input`).value;
     this._commentText = encode(commentText);
-  }
-
-  resetNewComment() {
-    this._selectedCommentEmoji = null;
-    this._commentText = ``;
-  }
-
-  addNewCommentBorderColor(color) {
-    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
-    const selectedEmoji = this.getElement().querySelector(`.film-details__add-emoji-label`);
-
-    textarea.style.borderColor = color;
-    selectedEmoji.style.borderColor = color;
-  }
-
-  manageFilmControlForm(status) {
-    const controlInputs = this.getElement().querySelectorAll(`.film-details__control-input`);
-    this._callDisable(controlInputs, status);
-  }
-
-  manageCommentsForm(status) {
-    const commentDeleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
-    const emojis = this.getElement().querySelectorAll(`.film-details__emoji-item`);
-    const textarea = this.getElement().querySelector(`.film-details__comment-input`);
-
-    this._callDisable(commentDeleteButtons, status);
-    this._callDisable(emojis, status);
-
-    textarea.disabled = status;
   }
 
   _callDisable(elements, status) {

@@ -2,6 +2,7 @@ import FilmModel from "../models/film.js";
 
 import {isOnline} from "../utils/common.js";
 
+
 const createStoreStructure = (items) => {
   return items.reduce((acc, current) => {
     return Object.assign({}, acc, {

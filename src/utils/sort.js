@@ -1,17 +1,17 @@
-import {Sort} from "../const.js";
+import {SortType} from "../const.js";
 
 
 const getFilmsBySort = (films, sortType) => {
   const sortingFilms = films.slice();
 
   switch (sortType) {
-    case Sort.TYPE.DATE:
+    case SortType.DATE:
       return sortingFilms.sort((a, b) => b.releaseDate - a.releaseDate);
 
-    case Sort.TYPE.RATING:
+    case SortType.RATING:
       return sortingFilms.sort((a, b) => b.rating - a.rating);
 
-    case Sort.TYPE.DEFAULT:
+    case SortType.DEFAULT:
       return sortingFilms;
   }
 

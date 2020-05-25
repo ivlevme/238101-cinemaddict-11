@@ -3,6 +3,7 @@ export default class Store {
     this._storage = storage;
     this._storeKey = key;
   }
+
   getItems() {
     try {
       return JSON.parse(this._storage.getItem(this._storeKey)) || {};

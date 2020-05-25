@@ -3,8 +3,15 @@ const CACHE_VER = `v1`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
 
+const HTTP_OK = 200;
+
+const ResponseType = {
+  BASIC: `basic`
+};
+
+
 const fillCache = (response, request) => {
-  if (!response || response.status !== 200 || response.type !== `basic`) {
+  if (!response || response.status !== HTTP_OK || response.type !== ResponseType.BASIC) {
     return response;
   }
 

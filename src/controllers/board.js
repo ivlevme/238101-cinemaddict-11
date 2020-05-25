@@ -1,4 +1,6 @@
-import {Film, Category} from "../const.js";
+import {FILM_CATEGORIES, EMPTY_ARRAY_LENGTH, INDEX_FIRST_ELEMENT_IN_ARRAY, INDEX_NEXT_ELEMENT_IN_ARRAY,
+  INDEX_MISS_ELEMENT, Category} from "../const.js";
+
 import {shake} from "../utils/common.js";
 import {render, remove} from "../utils/render.js";
 
@@ -67,6 +69,28 @@ export default class BoardController {
     }
   }
 
+  manageCommentsForm(disableStatus) {
+    if (disableStatus) {
+      this._callControllers((filmController) => {
+        filmController.disableCommentsForm();
+      });
+
+      return;
+    }
+
+    this._callControllers((filmController) => {
+      filmController.enableCommentsForm();
+    });
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
+  }
+
   _removeFilms(typeController) {
     this._showedFilmControllers[typeController].forEach((filmController) => filmController.destroy());
     this._showedFilmControllers[typeController] = [];
@@ -102,12 +126,12 @@ export default class BoardController {
           const mostCommentedComponentIndex = this._filmExtraComponents
           .findIndex((filmExtraComponent) => filmExtraComponent.getCategory() === Category.MOST_COMMENTED);
 
-          if (mostCommentedComponentIndex !== -1) {
+          if (mostCommentedComponentIndex !== INDEX_MISS_ELEMENT) {
             remove(this._filmExtraComponents[mostCommentedComponentIndex]);
 
             this._filmExtraComponents = [].concat(
-                this._filmExtraComponents.slice(0, mostCommentedComponentIndex),
-                this._filmExtraComponents.slice(mostCommentedComponentIndex + 1)
+                this._filmExtraComponents.slice(INDEX_FIRST_ELEMENT_IN_ARRAY, mostCommentedComponentIndex),
+                this._filmExtraComponents.slice(mostCommentedComponentIndex + INDEX_NEXT_ELEMENT_IN_ARRAY)
             );
           }
 
@@ -125,39 +149,21 @@ export default class BoardController {
       });
   }
 
-  _callControllers(cb) {
-    this._filmControllerTypes.forEach((controllerType) => {
-      this._showedFilmControllers[controllerType].forEach(cb);
-    });
-  }
-
-  _updateAllControllers(oldData, newData) {
-    this._callControllers((filmController) => {
-      if (filmController.getFilm() === oldData) {
-        filmController.render(newData);
-      }
-    });
-  }
-
-  _onViewChange() {
-    this._callControllers((filmController) => filmController.setDefaultView());
-  }
-
   _renderMainFilms() {
     this._updateMainFilms();
   }
 
   _renderExtraFilms() {
-    Film.CATEGORY.forEach((category) => {
+    FILM_CATEGORIES.forEach((category) => {
       this._renderExtraCategory(category);
     });
   }
 
   _renderExtraCategory(category) {
     const showingFilms = this._filmsModel.getExtraFilms(category)
-          .slice(0, SHOWING_EXTRA_FILMS_COUNT_ON_START);
+          .slice(INDEX_FIRST_ELEMENT_IN_ARRAY, SHOWING_EXTRA_FILMS_COUNT_ON_START);
 
-    if (showingFilms.length > 0) {
+    if (showingFilms.length > EMPTY_ARRAY_LENGTH) {
       const filmExtraComponent = new FilmExtraComponent(category);
       this._filmExtraComponents.push(filmExtraComponent);
 
@@ -206,34 +212,29 @@ export default class BoardController {
     this._showedFilmControllers.main = this._showedFilmControllers.main.concat(newFilms);
   }
 
+  _callControllers(cb) {
+    this._filmControllerTypes.forEach((controllerType) => {
+      this._showedFilmControllers[controllerType].forEach(cb);
+    });
+  }
+
+  _updateAllControllers(oldData, newData) {
+    this._callControllers((filmController) => {
+      if (filmController.getFilm() === oldData) {
+        filmController.render(newData);
+      }
+    });
+  }
+
   _onSortTypeChange() {
     this._updateMainFilms();
   }
-
 
   _onFilterChange() {
     this._updateMainFilms();
   }
 
-  hide() {
-    this._container.hide();
-  }
-
-  show() {
-    this._container.show();
-  }
-
-  manageCommentsForm(disableStatus) {
-    if (disableStatus) {
-      this._callControllers((filmController) => {
-        filmController.disableCommentsForm();
-      });
-
-      return;
-    }
-
-    this._callControllers((filmController) => {
-      filmController.enableCommentsForm();
-    });
+  _onViewChange() {
+    this._callControllers((filmController) => filmController.setDefaultView());
   }
 }

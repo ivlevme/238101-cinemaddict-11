@@ -43,6 +43,15 @@ export default class StatisticsController {
     render(this._container, this._statisticsComponent);
   }
 
+  hide() {
+    this._statisticsComponent.hide();
+  }
+
+  show() {
+    this._statisticsComponent.show();
+    this.render();
+  }
+
   setStatisticsFilter(statisticsFilter) {
     this._activeStatisticsFilter = statisticsFilter;
     this._filmsModel.setStatisticsFilter(statisticsFilter);
@@ -53,15 +62,6 @@ export default class StatisticsController {
   }
 
   _onStatisticsFilterDataChange() {
-    this.render();
-  }
-
-  hide() {
-    this._statisticsComponent.hide();
-  }
-
-  show() {
-    this._statisticsComponent.show();
     this.render();
   }
 }

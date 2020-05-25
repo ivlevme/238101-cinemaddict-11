@@ -2,13 +2,11 @@ import AbstractComponent from "./abstract-component.js";
 
 import {countHoursFromMinuties, countRemainsMinutesFromHours} from "../utils/common.js";
 
-import {IndexMap, FilterDate} from "../const.js";
+import {INDEX_FIRST_ELEMENT_IN_ARRAY, IndexMap, FilterDate} from "../const.js";
 
 import Chart from "chart.js";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-
-const INDEX_FIRST_ELEMENT_IN_ARRAY = 0;
 
 const FilterDateText = {
   [FilterDate.ALL_TIME]: `All time`,
@@ -19,8 +17,6 @@ const FilterDateText = {
 };
 
 
-const filterDates = Object.values(FilterDate);
-
 const createStatisticsMenuItemMarkup = (menuItem, isChecked) => {
   return (`
     <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter"
@@ -30,6 +26,8 @@ const createStatisticsMenuItemMarkup = (menuItem, isChecked) => {
 };
 
 const createStatisticsMenuMarkup = (activeFilter) => {
+  const filterDates = Object.values(FilterDate);
+
   return Array.from(filterDates)
     .map((filterDate) => {
       const isChecked = filterDate === activeFilter;

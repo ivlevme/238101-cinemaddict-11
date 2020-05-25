@@ -1,6 +1,8 @@
 import FilmModel from "../models/film.js";
 import CommentModel from "../models/comment.js";
 
+import {HttpStatus} from "../const.js";
+
 
 const Method = {
   GET: `GET`,
@@ -11,12 +13,13 @@ const Method = {
 
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= HttpStatus.OK && response.status < HttpStatus.REDIRECTION) {
     return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
 };
+
 
 export default class API {
   constructor(endPoint, authorization) {
@@ -36,11 +39,11 @@ export default class API {
     .then(CommentModel.parseComments);
   }
 
-  updateFilm(id, data) {
+  updateFilm(id, film) {
     return this._load({
       url: `movies/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(film.toRAW()),
       headers: new Headers({"Content-Type": `application/json`}),
     })
       .then((response) => response.json())
@@ -70,11 +73,11 @@ export default class API {
     return this._load({url: `comments/${id}`, method: Method.DELETE});
   }
 
-  sync(data) {
+  sync(films) {
     return this._load({
       url: `movies/sync`,
       method: Method.POST,
-      body: JSON.stringify(data),
+      body: JSON.stringify(films),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json());
