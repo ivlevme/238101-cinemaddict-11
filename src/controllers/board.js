@@ -22,8 +22,10 @@ const ControllerType = {
 
 
 export default class BoardController {
-  constructor(container, filmsModel, commentsModel, api) {
+  constructor(container, pageController, filmsModel, commentsModel, api) {
     this._container = container;
+
+    this._pageController = pageController;
 
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
@@ -93,6 +95,8 @@ export default class BoardController {
         const isSuccess = this._filmsModel.updateFilm(filmModel, oldData.id);
 
         if (isSuccess) {
+          this._pageController.updateProfileComponent(this._filmsModel.getUserRank());
+
           this._removeFilms(ControllerType.MOST_COMMENTED);
 
           const mostCommentedComponentIndex = this._filmExtraComponents

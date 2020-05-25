@@ -39,7 +39,7 @@ const createStatisticsMenuMarkup = (activeFilter) => {
 };
 
 const createStatisticsTemplate = (statistic, topGenre) => {
-  const {countWatchedFilms, totalDuration, activeFilter} = statistic;
+  const {countWatchedFilms, totalDuration, activeFilter, userRank} = statistic;
   const durationHours = countHoursFromMinuties(totalDuration);
   const remainsDurationMinutes = countRemainsMinutesFromHours(totalDuration, durationHours);
 
@@ -48,7 +48,7 @@ const createStatisticsTemplate = (statistic, topGenre) => {
       <p class="statistic__rank">
         Your rank
         <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">Sci-Fighter</span>
+        <span class="statistic__rank-label">${userRank}</span>
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">

@@ -62,12 +62,6 @@ const Sort = {
   }
 };
 
-const User = {
-  NAME: `Movie Buff`,
-  RANK: `Sci-Fighter`,
-};
-
-
 const DeleteButtonText = {
   DEFAULT: `Delete`,
   DELETING: `Deleting`
@@ -83,6 +77,20 @@ const Color = {
   NONE: ``,
 };
 
+const UserRank = {
+  NONE: ``,
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`,
+};
+
+const RankRatio = {
+  NONE: 0,
+  NOVICE: 9,
+  FAN: 20,
+};
+
 
 export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FilterType, FILTER_CATEGORIES, IndexMap,
-  FILMS_EMPTY, FilterDate, User, SHAKE_ANIMATION_TIMEOUT, DeleteButtonText, ElementStatus, Color};
+  FILMS_EMPTY, FilterDate, SHAKE_ANIMATION_TIMEOUT, DeleteButtonText, ElementStatus, Color, UserRank,
+  RankRatio};

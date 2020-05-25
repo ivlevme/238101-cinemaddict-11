@@ -111,10 +111,7 @@ export default class FilmController {
   }
 
   setDefaultView() {
-    this._detailsPopupComponent.getElement().remove();
-
-    document.removeEventListener(`keydown`, this._onSubmit);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._removeDetailsPopup();
   }
 
   destroy() {
