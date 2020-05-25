@@ -220,7 +220,7 @@ export default class BoardController {
 
   _updateAllControllers(oldData, newData) {
     this._callControllers((filmController) => {
-      if (filmController.getFilm() === oldData) {
+      if (filmController.getFilm().id === oldData.id) {
         filmController.render(newData);
       }
     });
