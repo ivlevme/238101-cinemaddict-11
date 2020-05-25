@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component.js";
 
-import {Sort} from "../const.js";
+import {SORT_BUTTONS, SortType, SortButtonText} from "../const.js";
 
 
 const createSortButtonsMarkup = (sortButtons, activeSortType) => {
@@ -10,9 +10,9 @@ const createSortButtonsMarkup = (sortButtons, activeSortType) => {
 
       return (`
         <li>
-          <a href="#" data-sort-type="${Sort.TYPE[sortButton]}" class="sort__button
-            ${activeSortType === Sort.TYPE[sortButton] ? `sort__button--active` : ``}">
-            ${Sort.BUTTON_TEXT[sortButton]}
+          <a href="#" data-sort-type="${SortType[sortButton]}" class="sort__button
+            ${activeSortType === SortType[sortButton] ? `sort__button--active` : ``}">
+            ${SortButtonText[sortButton]}
           </a>
         </li>
       `).trim();
@@ -22,7 +22,7 @@ const createSortButtonsMarkup = (sortButtons, activeSortType) => {
 const createSortTemplate = (activeSortType) => {
   return (`
     <ul class="sort">
-      ${createSortButtonsMarkup(Sort.BUTTONS, activeSortType)}
+      ${createSortButtonsMarkup(SORT_BUTTONS, activeSortType)}
     </ul>
   `).trim();
 };

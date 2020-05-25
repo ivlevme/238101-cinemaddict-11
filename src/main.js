@@ -43,6 +43,10 @@ pageController.render();
 
 
 window.addEventListener(`load`, () => {
+  if (!isOnline()) {
+    manageOfflineMode(ElementStatus.DISABLE);
+  }
+
   navigator.serviceWorker.register(`/sw.js`);
 });
 
@@ -53,10 +57,4 @@ window.addEventListener(`online`, () => {
 
 window.addEventListener(`offline`, () => {
   manageOfflineMode(ElementStatus.DISABLE);
-});
-
-window.addEventListener(`load`, () => {
-  if (!isOnline()) {
-    manageOfflineMode(ElementStatus.DISABLE);
-  }
 });

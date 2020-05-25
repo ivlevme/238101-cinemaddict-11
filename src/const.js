@@ -1,7 +1,20 @@
 const FILMS_EXTRA_COUNT = 2;
 const FILMS_EMPTY = 0;
 
+const EMPTY_ARRAY_LENGTH = 0;
+const INDEX_FIRST_ELEMENT_IN_ARRAY = 0;
+const INDEX_NEXT_ELEMENT_IN_ARRAY = 1;
+
+const INDEX_MISS_ELEMENT = -1;
+
 const SHAKE_ANIMATION_TIMEOUT = 600;
+
+
+const FILTER_CATEGORIES = [`Watchlist`, `History`, `Favorites`];
+const SORT_BUTTONS = [`default`, `date`, `rating`];
+const EMOJIS = [`smile`, `sleeping`, `puke`, `angry`];
+
+const FILM_CATEGORIES = new Set([`Top Rated`, `Most Commented`]);
 
 const FilterType = {
   ALL: `all`,
@@ -9,12 +22,6 @@ const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`,
 };
-
-const FILTER_CATEGORIES = [
-  `Watchlist`,
-  `History`,
-  `Favorites`,
-];
 
 const IndexMap = {
   KEY: 0,
@@ -29,37 +36,20 @@ const FilterDate = {
   YEAR: `year`,
 };
 
-
-const Film = {
-  CATEGORY: new Set([`Top Rated`, `Most Commented`]),
-};
-
 const Category = {
   TOP_RATED: `Top Rated`,
   MOST_COMMENTED: `Most Commented`,
 };
 
-const Comment = {
-  EMOJI: [
-    `smile`,
-    `sleeping`,
-    `puke`,
-    `angry`,
-  ]
+const SortButtonText = {
+  DEFAULT: `Sort by default`,
+  DATE: `Sort by date`,
+  RATING: `Sort by rating`,
 };
-
-const Sort = {
-  BUTTONS: [`default`, `date`, `rating`],
-  BUTTON_TEXT: {
-    DEFAULT: `Sort by default`,
-    DATE: `Sort by date`,
-    RATING: `Sort by rating`,
-  },
-  TYPE: {
-    DATE: `date`,
-    RATING: `rating`,
-    DEFAULT: `default`,
-  }
+const SortType = {
+  DATE: `date`,
+  RATING: `rating`,
+  DEFAULT: `default`,
 };
 
 const DeleteButtonText = {
@@ -90,7 +80,21 @@ const RankRatio = {
   FAN: 20,
 };
 
+const HttpStatus = {
+  OK: 200,
+  REDIRECTION: 300,
+};
 
-export {FILMS_EXTRA_COUNT, Film, Category, Comment, Sort, FilterType, FILTER_CATEGORIES, IndexMap,
-  FILMS_EMPTY, FilterDate, SHAKE_ANIMATION_TIMEOUT, DeleteButtonText, ElementStatus, Color, UserRank,
-  RankRatio};
+const KeyboardKey = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`,
+  ENTER: `Enter`,
+};
+
+
+export {
+  FILMS_EXTRA_COUNT, EMOJIS, FILTER_CATEGORIES, FILMS_EMPTY, SHAKE_ANIMATION_TIMEOUT, SORT_BUTTONS,
+  FILM_CATEGORIES, EMPTY_ARRAY_LENGTH, INDEX_FIRST_ELEMENT_IN_ARRAY, INDEX_NEXT_ELEMENT_IN_ARRAY,
+  INDEX_MISS_ELEMENT, Category, FilterType, IndexMap, FilterDate, DeleteButtonText, ElementStatus,
+  Color, UserRank, RankRatio, SortButtonText, SortType, HttpStatus, KeyboardKey,
+};

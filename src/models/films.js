@@ -1,4 +1,7 @@
-import {Sort, FilterType, FilterDate, UserRank, RankRatio} from "../const.js";
+import {INDEX_FIRST_ELEMENT_IN_ARRAY, INDEX_NEXT_ELEMENT_IN_ARRAY, INDEX_MISS_ELEMENT, SortType,
+  FilterType, FilterDate, UserRank, RankRatio} from "../const.js";
+
+import {callHandlers} from "../utils/common.js";
 
 import {getFilmsByFilter, getFilmsByCategory, getStatisticsByFilterDate} from "../utils/filter.js";
 import {getFilmsBySort} from "../utils/sort.js";
@@ -10,7 +13,7 @@ export default class Films {
 
     this._userRank = UserRank.NONE;
     this._activeFilterType = FilterType.ALL;
-    this._activeSortType = Sort.TYPE.DEFAULT;
+    this._activeSortType = SortType.DEFAULT;
     this._statisticsFilter = FilterDate.ALL_TIME;
 
     this._dataChangeHandlers = [];
@@ -42,26 +45,46 @@ export default class Films {
     return this._films;
   }
 
+  updateFilm(film, id) {
+    const index = this._films.findIndex((it) => it.id === id);
+
+    if (index === INDEX_MISS_ELEMENT) {
+      return false;
+    }
+
+    this._films = [].concat(
+        this._films.slice(INDEX_FIRST_ELEMENT_IN_ARRAY, index),
+        film,
+        this._films.slice(index + INDEX_NEXT_ELEMENT_IN_ARRAY)
+    );
+
+    this._userRank = this._setUserRank(this._films);
+
+    callHandlers(this._dataChangeHandlers);
+
+    return true;
+  }
+
   setFilms(films) {
     this._films = Array.from(films);
     this._userRank = this._setUserRank(films);
 
-    this._callHandlers(this._dataChangeHandlers);
+    callHandlers(this._dataChangeHandlers);
   }
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers);
+    callHandlers(this._filterChangeHandlers);
   }
 
   setSortType(sortType) {
     this._activeSortType = sortType;
-    this._callHandlers(this._sortChangeHandlers);
+    callHandlers(this._sortChangeHandlers);
   }
 
   setStatisticsFilter(statisticsFilter) {
     this._statisticsFilter = statisticsFilter;
-    this._callHandlers(this._statisticsFilterChangeHandlers);
+    callHandlers(this._statisticsFilterChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {
@@ -76,28 +99,8 @@ export default class Films {
     this._statisticsFilterChangeHandlers.push(handler);
   }
 
-  updateFilm(film, id) {
-    const index = this._films.findIndex((it) => it.id === id);
-
-    if (index === -1) {
-      return false;
-    }
-
-    this._films = [].concat(this._films.slice(0, index), film, this._films.slice(index + 1));
-
-    this._userRank = this._setUserRank(this._films);
-
-    this._callHandlers(this._dataChangeHandlers);
-
-    return true;
-  }
-
   setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler);
-  }
-
-  _callHandlers(handlers) {
-    handlers.forEach((handler) => handler());
   }
 
   _setUserRank(films) {

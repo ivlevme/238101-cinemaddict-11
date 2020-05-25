@@ -1,11 +1,16 @@
 import {FilterType, Category, FilterDate} from "../const.js";
 
-
 import moment from "moment";
 
 
 const MIN_RATING = 0;
 const MIN_COUNT_COMMENTS = 0;
+const MIN_DURATION = 0;
+
+const COUNT_ONE_GENRE = 1;
+
+const ONE_TIME_UNIT = 1;
+const COUNT_DAYS_IN_WEEK = 7;
 
 
 const getFilmsByFilter = (films, filterType) => {
@@ -50,19 +55,19 @@ const getFilmsByFilterDate = (films, filterDate) => {
       return films;
 
     case FilterDate.TODAY:
-      const yesterday = moment().subtract(1, `d`).toDate();
+      const yesterday = moment().subtract(ONE_TIME_UNIT, `d`).toDate();
       return films.filter((film) => film.watchingDate <= today && film.watchingDate >= yesterday);
 
     case FilterDate.WEEK:
-      const weekAgo = moment().subtract(7, `d`).toDate();
+      const weekAgo = moment().subtract(COUNT_DAYS_IN_WEEK, `d`).toDate();
       return films.filter((film) => film.watchingDate <= today && film.watchingDate >= weekAgo);
 
     case FilterDate.MONTH:
-      const monthAgo = moment().subtract(1, `M`).toDate();
+      const monthAgo = moment().subtract(ONE_TIME_UNIT, `M`).toDate();
       return films.filter((film) => film.watchingDate <= today && film.watchingDate >= monthAgo);
 
     case FilterDate.YEAR:
-      const yearAgo = moment().subtract(1, `y`).toDate();
+      const yearAgo = moment().subtract(ONE_TIME_UNIT, `y`).toDate();
       return films.filter((film) => film.watchingDate <= today && film.watchingDate >= yearAgo);
   }
 
@@ -75,7 +80,7 @@ const getStatisticsByFilterDate = (films, activeFilterDate, userRank) => {
 
   const statistic = {
     countWatchedFilms: filmsByFilterDate.length,
-    totalDuration: 0,
+    totalDuration: MIN_DURATION,
     genres: {},
     activeFilter: activeFilterDate,
     userRank,
@@ -85,7 +90,8 @@ const getStatisticsByFilterDate = (films, activeFilterDate, userRank) => {
     statistic.totalDuration += film.runtime;
 
     film.genres.forEach((genre) => {
-      statistic.genres[genre] = statistic.genres[genre] ? statistic.genres[genre] + 1 : 1;
+      statistic.genres[genre] = statistic.genres[genre] ?
+        statistic.genres[genre] + COUNT_ONE_GENRE : COUNT_ONE_GENRE;
     });
   });
 

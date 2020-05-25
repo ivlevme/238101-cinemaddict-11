@@ -37,6 +37,18 @@ export default class CommentController {
     remove(this._commentComponent);
   }
 
+  disableDeleteButton(status) {
+    this._commentComponent.getElement().querySelector(`.film-details__comment-delete`).disabled = status;
+  }
+
+  getComment() {
+    return this._comment;
+  }
+
+  getElement() {
+    return this._commentComponent.getElement();
+  }
+
   _onDeleteButtonClick() {
     this.setDeleteButtonText(DeleteButtonText.DELETING);
     this.render();
@@ -48,17 +60,5 @@ export default class CommentController {
 
   setDeleteButtonText(deleteButtonText) {
     this._deleteButtonText = deleteButtonText;
-  }
-
-  disableDeleteButton(status) {
-    this._commentComponent.getElement().querySelector(`.film-details__comment-delete`).disabled = status;
-  }
-
-  getComment() {
-    return this._comment;
-  }
-
-  getElement() {
-    return this._commentComponent.getElement();
   }
 }

@@ -1,4 +1,4 @@
-import {FilterType, Sort} from "../const.js";
+import {FilterType, SortType} from "../const.js";
 import {render, replace, RenderPosition} from "../utils/render.js";
 import {getFilmsByFilter} from "../utils/filter.js";
 
@@ -49,11 +49,19 @@ export default class FilterController {
     render(container, this._filterComponent, RenderPosition.AFTERBEGIN);
   }
 
+  setMenuChangeHandler(handler) {
+    this._menuChengeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
+  }
+
   _onFilterChange(filterType) {
     this._filmsModel.setFilter(filterType);
 
-    this._sortController.setSortType(Sort.TYPE.DEFAULT);
-    this._filmsModel.setSortType(Sort.TYPE.DEFAULT);
+    this._sortController.setSortType(SortType.DEFAULT);
+    this._filmsModel.setSortType(SortType.DEFAULT);
 
     this._activeFilterType = filterType;
 
@@ -66,13 +74,5 @@ export default class FilterController {
 
   _onDataChange() {
     this.render();
-  }
-
-  setMenuChangeHandler(handler) {
-    this._menuChengeHandlers.push(handler);
-  }
-
-  _callHandlers(handlers) {
-    handlers.forEach((handler) => handler());
   }
 }

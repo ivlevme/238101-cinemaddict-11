@@ -1,5 +1,5 @@
 import {render, replace} from "../utils/render.js";
-import {FilterDate} from "../const.js";
+import {EMPTY_ARRAY_LENGTH, FilterDate} from "../const.js";
 
 import FilmsModel from "../models/films.js";
 import CommentsModel from "../models/comments.js";
@@ -56,23 +56,23 @@ export default class PageController {
 
   render() {
     this._api.getFilms()
-    .then((films) => {
-      this._filmsModel.setFilms(films);
-      this._renderBoardFilms();
+      .then((films) => {
+        this._filmsModel.setFilms(films);
+        this._renderBoardFilms();
 
-      this.updateProfileComponent(this._filmsModel.getUserRank());
+        this.updateProfileComponent(this._filmsModel.getUserRank());
 
-      const countFilms = this._filmsModel.getFilms().length;
+        const countFilms = this._filmsModel.getFilms().length;
 
-      const oldFooterStatisticsComponent = this._footerStatisticsComponent;
-      this._footerStatisticsComponent = new FooterStatisticsComponent(countFilms);
-      replace(this._footerStatisticsComponent, oldFooterStatisticsComponent);
+        const oldFooterStatisticsComponent = this._footerStatisticsComponent;
+        this._footerStatisticsComponent = new FooterStatisticsComponent(countFilms);
+        replace(this._footerStatisticsComponent, oldFooterStatisticsComponent);
 
-      this._statisticsController.render();
-    })
-    .catch(() => {
-      replace(this._noFilmsComponent, this._filmsLoadingComponent);
-    });
+        this._statisticsController.render();
+      })
+      .catch(() => {
+        replace(this._noFilmsComponent, this._filmsLoadingComponent);
+      });
 
     render(this._headerConatiner, this._profileComponent);
     render(this._mainConatiner, this._mainNavigationComponent);
@@ -84,7 +84,6 @@ export default class PageController {
     render(this._footerStatistics, this._footerStatisticsComponent);
 
     this._statisticsController.render();
-    this._statisticsController.hide();
 
     this._mainNavigationComponent.setOnChange(() => {
       this._boardController.hide();
@@ -102,8 +101,12 @@ export default class PageController {
     replace(this._profileComponent, oldProfileComponent);
   }
 
+  manageCommentsForm(status) {
+    this._boardController.manageCommentsForm(status);
+  }
+
   _renderBoardFilms() {
-    if (this._filmsModel.getFilms().length > 0) {
+    if (this._filmsModel.getFilms().length > EMPTY_ARRAY_LENGTH) {
       replace(this._filmsContainerComponent, this._filmsLoadingComponent);
 
       this._boardController.render();
@@ -119,9 +122,5 @@ export default class PageController {
     this._boardController.show();
 
     this._statisticsController.hide();
-  }
-
-  manageCommentsForm(status) {
-    this._boardController.manageCommentsForm(status);
   }
 }

@@ -1,24 +1,24 @@
 export default class Film {
-  constructor(data) {
-    this.id = data[`id`];
-    this.actors = data[`film_info`][`actors`];
-    this.ageLimit = data[`film_info`][`age_rating`];
-    this.comments = data[`comments`];
-    this.country = data[`film_info`][`release`][`release_country`];
-    this.description = data[`film_info`][`description`];
-    this.director = data[`film_info`][`director`];
-    this.genres = data[`film_info`][`genre`];
-    this.isFavorites = Boolean(data[`user_details`][`favorite`]);
-    this.isWatched = Boolean(data[`user_details`][`already_watched`]);
-    this.isWatchlist = Boolean(data[`user_details`][`watchlist`]);
-    this.watchingDate = data[`user_details`][`watching_date`] ? new Date(data[`user_details`][`watching_date`]) : null;
-    this.name = data[`film_info`][`title`];
-    this.original = data[`film_info`][`alternative_title`];
-    this.poster = data[`film_info`][`poster`];
-    this.rating = data[`film_info`][`total_rating`];
-    this.releaseDate = new Date(data[`film_info`][`release`][`date`]);
-    this.runtime = data[`film_info`][`runtime`];
-    this.writers = data[`film_info`][`writers`];
+  constructor(film) {
+    this.id = film[`id`];
+    this.actors = film[`film_info`][`actors`];
+    this.ageLimit = film[`film_info`][`age_rating`];
+    this.comments = film[`comments`];
+    this.country = film[`film_info`][`release`][`release_country`];
+    this.description = film[`film_info`][`description`];
+    this.director = film[`film_info`][`director`];
+    this.genres = film[`film_info`][`genre`];
+    this.isFavorites = Boolean(film[`user_details`][`favorite`]);
+    this.isWatched = Boolean(film[`user_details`][`already_watched`]);
+    this.isWatchlist = Boolean(film[`user_details`][`watchlist`]);
+    this.watchingDate = film[`user_details`][`watching_date`] ? new Date(film[`user_details`][`watching_date`]) : null;
+    this.name = film[`film_info`][`title`];
+    this.original = film[`film_info`][`alternative_title`];
+    this.poster = film[`film_info`][`poster`];
+    this.rating = film[`film_info`][`total_rating`];
+    this.releaseDate = new Date(film[`film_info`][`release`][`date`]);
+    this.runtime = film[`film_info`][`runtime`];
+    this.writers = film[`film_info`][`writers`];
   }
 
   toRAW() {
@@ -51,15 +51,15 @@ export default class Film {
     };
   }
 
-  static parseFilm(data) {
-    return new Film(data);
+  static parseFilm(film) {
+    return new Film(film);
   }
 
-  static parseFilms(data) {
-    return data.map(Film.parseFilm);
+  static parseFilms(film) {
+    return film.map(Film.parseFilm);
   }
 
-  static clone(data) {
-    return new Film(data.toRAW());
+  static clone(film) {
+    return new Film(film.toRAW());
   }
 }
