@@ -11,9 +11,9 @@ const FilterName = {
 };
 
 
-const createFilterCountMarkup = (count) => {
+const createFilterCountMarkup = (count, name) => {
   return (`
-    <span class="main-navigation__item-count">${count}</span>
+    <span class="main-navigation__item-count" data-filter-type="${name}">${count}</span>
   `).trim();
 };
 
@@ -22,7 +22,7 @@ const createFilterButtonsMarkup = (filter, isChecked) => {
 
   return (`
     <a href="#${name}" class="main-navigation__item ${isChecked ? `main-navigation__item--active` : ``}" data-filter-type ="${name}">
-      ${FilterName[name.toUpperCase()]} ${name === FilterType.ALL ? `` : createFilterCountMarkup(count)}
+      ${FilterName[name.toUpperCase()]} ${name === FilterType.ALL ? `` : createFilterCountMarkup(count, name)}
     </a>
   `).trim();
 };
@@ -51,7 +51,7 @@ export default class Filter extends AbstractComponent {
 
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
-      if (evt.target.tagName !== `A`) {
+      if (evt.target.tagName !== `A` && evt.target.tagName !== `SPAN`) {
         return;
       }
 
